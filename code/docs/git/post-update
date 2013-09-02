@@ -1,0 +1,24 @@
+#!/bin/bash
+
+cd ../spendible/code
+sudo git reset --hard
+sudo git pull origin master
+
+sudo cp ../../config/parameters.yml app/config/parameters.yml
+
+sudo composer update
+
+sudo rm -f app/DoctrineMigrations/*
+
+sudo php app/console doctrine:migrations:diff
+echo "Y Y" | sudo php app/console doctrine:migrations:migrate
+
+sudo php app/console cache:clear --env=prod --no-debug
+sudo php app/console assetic:dump --env=prod
+
+cd ..
+cd ..
+sudo chown -R www-data:www-data spendible/code
+
+echo "All done"
+

@@ -1,0 +1,3 @@
+my_main_homepage:
+    pattern:  /
+    defaults: { _controller: MyMainBundle:Pages:home }
