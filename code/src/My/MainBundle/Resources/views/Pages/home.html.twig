@@ -1,5 +1,15 @@
 {% extends 'MyMainBundle::layout.html.twig' %}
 
 {% block content %}
-Greenspace
+<p class="lead">Greenspace</p>
+
+<ul>
+    {% for g in games %}
+    <li>
+        <a href="{{ path('games_show', {game: g.id}) }}">
+            [{{ g.id }}] {{ g.name }}
+        </a>
+    </li>
+    {% endfor %}
+</ul>
 {% endblock %}

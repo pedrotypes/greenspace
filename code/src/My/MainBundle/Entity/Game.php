@@ -30,6 +30,13 @@ class Game extends BaseEntity
     public function setMap(Map $map) { $this->map = $map; return $this; }
     public function getMap() { return $this->map; }
 
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $name;
+    public function setName($name) { $this->name = $name; return $this; }
+    public function getName() { return $this->name; }
+
 
     /**
      * Constructor

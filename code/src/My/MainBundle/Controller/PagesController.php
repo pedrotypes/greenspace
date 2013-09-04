@@ -11,10 +11,11 @@ class PagesController extends Controller
 {
     public function homeAction()
     {
-        if ($this->getUser()) {
-            return $this->forward('MyAppBundle:Dashboard:index');
-        } else {
-            return array();
-        }
+        $games = $this->getDoctrine()->getManager()
+            ->getRepository('MyMainBundle:Game')
+            ->findAll()
+        ;
+
+        return ['games' => $games];
     }
 }

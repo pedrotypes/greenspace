@@ -10,11 +10,15 @@ use My\MainBundle\Entity\Player;
 
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="My\MainBundle\Entity\BaseRepository")
  * @ORM\Table(name="bases")
  */
 class Base extends BaseEntity
 {
+    const MIN_DEFAULT_ECONOMY = 1;
+    const MAX_DEFAULT_ECONOMY = 10;
+
+
     /**
      * @ORM\ManyToOne(targetEntity="Map", inversedBy="bases")
      */
@@ -37,6 +41,20 @@ class Base extends BaseEntity
     public function removeFleet(Fleet $fleet) { $this->fleets->removeElement($fleet); return $this; }
     public function getFleets() { return $this->fleets; }
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $power = 0;
+    public function setPower($power) { $this->power = $power; return $this; }
+    public function getPower() { return $this->power; }
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $economy = 1;
+    public function setEconomy($economy) { $this->economy = $economy; return $this; }
+    public function getEconomy() { return $this->economy; }
+
 
     /**
      * Constructor
@@ -46,4 +64,10 @@ class Base extends BaseEntity
         $this->fleets = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
+    public function produceShips()
+    {
+        $this->power += $this->economy;
+
+        return $this;
+    }
 }
