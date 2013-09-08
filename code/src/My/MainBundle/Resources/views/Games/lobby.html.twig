@@ -1,0 +1,34 @@
+{% extends 'MyMainBundle::layout.html.twig' %}
+
+{% block content %}
+<p class="lead">
+    {{ game.name }}
+</p>
+
+<p>
+    This game has not yet started
+</p>
+
+{{ players|length }} players
+<ul>
+    {% for p in players %}
+        <li>
+            <img src="{{ p.user.getGravatar(24) }}">
+            {{ p.user.name }}
+        </li>
+    {% endfor %}
+</ul>
+
+<p>
+    {% if game.hasUser(user) %}
+        <a href="{{ path('games_leave', {game: game.id}) }}" class="btn btn-warning">
+            Leave
+        </a>
+    {% else %}
+        <a href="{{ path('games_join', {game: game.id}) }}" class="btn btn-success">
+            Join
+        </a>
+    {% endif %}
+</p>
+
+{% endblock %}

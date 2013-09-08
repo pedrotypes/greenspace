@@ -1,0 +1,15 @@
+games_index:
+    pattern: /games
+    defaults: { _controller: MyMainBundle:Games:index }
+
+games_show:
+    pattern: /games/{game}
+    defaults: { _controller: MyMainBundle:Games:show }
+
+games_join:
+    pattern: /games/{game}/join
+    defaults: { _controller: MyMainBundle:Games:join }
+
+games_leave:
+    pattern: /games/{game}/leave
+    defaults: { _controller: MyMainBundle:Games:leave }

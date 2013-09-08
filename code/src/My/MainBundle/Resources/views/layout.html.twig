@@ -3,7 +3,7 @@
 %}<!DOCTYPE html>
 <html>
   <head>
-    <title>{% block title %}Spendible!{% endblock %}</title>
+    <title>{% block title %}Greenspace{% endblock %}</title>
 
     <!-- Mobile -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -17,6 +17,7 @@
     {% block stylesheets %}
         {% stylesheets
             '@MyMainBundle/Resources/public/bootstrap/css/*'
+            '@MyMainBundle/Resources/public/css/*'
             output='/compiled/css/main.css'
         %}
             <link rel="stylesheet" type="text/css" href="{{ asset_url }}" media="screen">
@@ -25,13 +26,55 @@
   </head>
   <body>
     
+    <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="{{ path('homepage') }}">
+                    Greenspace
+                </a>
+            </div>
+
+            {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+                <ul class="nav navbar-nav navbar-left">
+                    <li>
+                        <a href="{{ path('games_index') }}">
+                            Running games
+                        </a>
+                    </li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="{{ path('fos_user_profile_edit') }}">
+                            <img src="{{ user.getGravatar(24) }}">
+                            {{ user.name }}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ path('fos_user_security_logout') }}">
+                            Logout
+                        </a>
+                    </li>
+                </ul>
+
+            {% else %}
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="{{ path('fos_user_registration_register') }}">Sign up</a>
+                    </li>
+
+                    <li>
+                        <a href="{{ path('fos_user_security_login') }}">Log in</a>
+                    </li>
+                </ul>
+
+            {% endif %}
+        </div>
+    </nav>
+
     {% block contentwrapper %}
         <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    {% block content %}{% endblock %}
-                </div>
-            </div>
+            {% block content %}{% endblock %}
         </div>
     {% endblock %}
 

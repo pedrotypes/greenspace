@@ -11,11 +11,6 @@ class PagesController extends Controller
 {
     public function homeAction()
     {
-        $games = $this->getDoctrine()->getManager()
-            ->getRepository('MyMainBundle:Game')
-            ->findAll()
-        ;
-
-        return ['games' => $games];
+        return [];
     }
 }

@@ -1,0 +1,17 @@
+{% extends 'MyMainBundle::layout.html.twig' %}
+
+{% block content %}
+<p class="lead">
+    {{ game.name }}
+</p>
+
+<ul class="bases">
+    {% for b in bases %}
+        <li class="well">
+            #{{ b.id }}
+            {% if b.player %}({{ b.player.name }}){% endif %}
+        </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

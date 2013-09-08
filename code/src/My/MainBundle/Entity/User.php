@@ -5,6 +5,9 @@ use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
+use My\MainBundle\Entity\Player;
+
+
 /**
  * @ORM\Entity
  * @ORM\Table(name="users")
@@ -28,6 +31,22 @@ class User extends BaseUser
     public function setName($name) { $this->name = $name; return $this; }
     public function getName() { return $this->name; }
 
+    /**
+     * @ORM\OneToMany(targetEntity="Player", mappedBy="player")
+     */
+    private $players;
+    public function addPlayer(Player $base) { $this->players[] = $base; return $this; }
+    public function removePlayer(Player $base) { $this->players->removeElement($base); return $this; }
+    public function getPlayers() { return $this->players; }
+
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->players = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
 
     public function getGravatar($size = 50)

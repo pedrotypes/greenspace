@@ -7,6 +7,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use My\MainBundle\Entity\Base;
 use My\MainBundle\Entity\Fleet;
 use My\MainBundle\Entity\Map;
+use My\MainBundle\Entity\User;
 
 
 /**
@@ -21,6 +22,13 @@ class Player extends BaseEntity
     private $game;
     public function setGame(Game $game) { $this->game = $game; return $this; }
     public function getGame() { return $this->game; }
+
+    /**
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="players")
+     */
+    private $user;
+    public function setUser(User $user) { $this->user = $user; return $this; }
+    public function getUser() { return $this->user; }
 
     /**
      * @ORM\OneToMany(targetEntity="Base", mappedBy="player")

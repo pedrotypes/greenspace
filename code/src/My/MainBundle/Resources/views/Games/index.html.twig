@@ -1,0 +1,18 @@
+{% extends 'MyMainBundle::layout.html.twig' %}
+
+{% block content %}
+<ul class="list-unstyled">
+    {% for g in games %}
+    <li>
+        <a href="{{ path('games_show', {game: g.id}) }}">
+            {% if g.hasUser(user) %}
+                <strong>[{{ g.id }}] {{ g.name }}</strong>
+            {% else %}
+                [{{ g.id }}] {{ g.name }}
+            {% endif %}
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}
