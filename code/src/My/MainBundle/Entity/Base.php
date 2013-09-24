@@ -15,8 +15,8 @@ use My\MainBundle\Entity\Player;
  */
 class Base extends BaseEntity
 {
-    const MIN_DEFAULT_ECONOMY = 1;
-    const MAX_DEFAULT_ECONOMY = 10;
+    const MIN_DEFAULT_RESOURCES = 5;
+    const MAX_DEFAULT_RESOURCES = 10;
 
 
     /**
@@ -25,6 +25,20 @@ class Base extends BaseEntity
     private $map;
     public function setMap(Map $map) { $this->map = $map; return $this; }
     public function getMap() { return $this->map; }
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $x;
+    public function setX($x) { $this->x = $x; return $this; }
+    public function getX() { return $this->x; }
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $y;
+    public function setY($y) { $this->y = $y; return $this; }
+    public function getY() { return $this->y; }    
 
     /**
      * @ORM\ManyToOne(targetEntity="Player", inversedBy="bases")
@@ -44,6 +58,13 @@ class Base extends BaseEntity
     /**
      * @ORM\Column(type="integer")
      */
+    private $resources = 1;
+    public function setResources($resources) { $this->resources = $resources; return $this; }
+    public function getResources() { return $this->resources; }
+
+    /**
+     * @ORM\Column(type="integer")
+     */
     private $power = 0;
     public function setPower($power) { $this->power = $power; return $this; }
     public function getPower() { return $this->power; }
@@ -51,7 +72,7 @@ class Base extends BaseEntity
     /**
      * @ORM\Column(type="integer")
      */
-    private $economy = 1;
+    private $economy = 0;
     public function setEconomy($economy) { $this->economy = $economy; return $this; }
     public function getEconomy() { return $this->economy; }
 

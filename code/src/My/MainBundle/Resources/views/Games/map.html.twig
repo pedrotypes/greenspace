@@ -5,13 +5,31 @@
     {{ game.name }}
 </p>
 
-<ul class="bases">
-    {% for b in bases %}
-        <li class="well">
-            #{{ b.id }}
-            {% if b.player %}({{ b.player.name }}){% endif %}
-        </li>
-    {% endfor %}
-</ul>
+<div class="map-wrapper">
+    <div class="map-container" style="
+        width: {{ map.width }}px;
+        height: {{ map.width }}px;
+    ">
+        {% for b in bases %}
+        <div class="base-overlay base-radius" style="
+            top: {{ b.x - 30}}px;
+            left: {{ b.y - 30 }}px;
+        "></div>
+
+        <div class="base-overlay base-resources" style="
+            top: {{ b.x - b.resources * 2 - 1 }}px;
+            left: {{ b.y - b.resources * 2 - 1 }}px;
+            width: {{ b.resources * 4 }}px;
+            height: {{ b.resources * 4 }}px;
+        "></div>
+
+        <div class="base-core" style="
+            top: {{ b.x - 4}}px;
+            left: {{ b.y - 4 }}px;
+        "></div>
+
+        {% endfor %}
+    </div>
+</div>
 
 {% endblock %}

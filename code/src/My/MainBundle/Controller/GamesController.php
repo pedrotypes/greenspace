@@ -28,6 +28,7 @@ class GamesController extends Controller
         $action = $game->hasStarted() ?
             'MyMainBundle:Games:map' : 'MyMainBundle:Games:lobby'
         ;
+        $action = 'MyMainBundle:Games:map';
 
         return $this->forward($action, ['game' => $game]);
     }
@@ -46,11 +47,16 @@ class GamesController extends Controller
     {
         $map = $game->getMap();
         $bases = $map->getBases();
+        $indexedBases = [];
+        foreach ($bases as $base) {
+            $indexedBases[$base->getX()][$base->getY()] = $base;
+        }
 
         return $this->render('MyMainBundle:Games:map.html.twig', [
             'game'  => $game,
             'map'   => $map,
             'bases' => $bases,
+            'indexedBases' => $indexedBases,
         ]);
     }
 

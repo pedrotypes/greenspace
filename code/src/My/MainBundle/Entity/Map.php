@@ -30,6 +30,12 @@ class Map extends BaseEntity
     public function removeBase(Base $base) { $this->bases->removeElement($base); return $this; }
     public function getBases() { return $this->bases; }
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $width;
+    public function setWidth($width) { $this->width = $width; return $this; }
+    public function getWidth() { return $this->width; }
 
     /**
      * Constructor

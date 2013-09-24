@@ -19,7 +19,9 @@ class GameNewCommand extends ContainerAwareCommand
     protected $input;
     protected $output;
 
-    const DEFAULT_BASE_COUNT = 10;
+    protected $bases = [];
+
+    const DEFAULT_MAP_WIDTH = 10;
 
 
     protected function configure()
@@ -27,8 +29,9 @@ class GameNewCommand extends ContainerAwareCommand
         $this
             ->setName('game:new')
             ->setDescription('Start a new game')
-            ->addOption('name', 'null', InputOption::VALUE_REQUIRED, 'Game name')
-            ->addOption('bases', null, InputOption::VALUE_REQUIRED, 'Number of bases on the map')
+            ->addOption('name', null, InputOption::VALUE_REQUIRED, 'Game name')
+            ->addOption('width', null, InputOption::VALUE_REQUIRED, 'Map width')
+            ->addOption('min-distance', null, InputOption::VALUE_REQUIRED, 'Minimum distance between stars')
         ;
     }
 
@@ -40,11 +43,11 @@ class GameNewCommand extends ContainerAwareCommand
 
         $game = $this->createGame();
         $map = $this->createMap($game);
-        $bases = $this->populateBases($map);
+        $bases = $this->generateBases($map);
 
         $this->em->flush();
 
-        $output->writeln("Done");
+        $output->writeln("Game #" . $game->getId() . " ready for players.");
     }
 
 
@@ -63,7 +66,10 @@ class GameNewCommand extends ContainerAwareCommand
     protected function createMap(Game $game)
     {
         $map = new Map;
-        $map->setGame($game);
+        $map
+            ->setGame($game)
+            ->setWidth($this->input->getOption('width'))
+        ;
 
         $this->em->persist($map);
         $this->output->writeln('Map created');
@@ -71,22 +77,64 @@ class GameNewCommand extends ContainerAwareCommand
         return $map;
     }
 
-    protected function populateBases(Map $map)
+    protected function generateBases(Map $map)
     {
-        $n = (int) $this->input->getOption('bases') ?: static::DEFAULT_BASE_COUNT;
+        $n = (int) $this->input->getOption('width') ?: static::DEFAULT_MAP_WIDTH;
+        $minDistance = $this->input->getOption('min-distance') ?: 10;
+        $baseCount = 0;
         $bases = [];
 
-        for ($i = 0; $i < $n; $i++) {
-            $base = new Base;
-            $base
-                ->setMap($map)
-                ->setEconomy(rand(Base::MIN_DEFAULT_ECONOMY, Base::MAX_DEFAULT_ECONOMY))
-            ;
+        for ($x = 1; $x < $n; $x++) {
+            for ($y = 1; $y < $n; $y++) {
+                if (!$this->canHazBase($x, $y, $n)) continue;
+                if (!$this->canHazPadding($x, $y, $minDistance)) continue;
 
-            $this->em->persist($base);
-            $this->output->writeln('Base created');
+                $base = new Base;
+                $base
+                    ->setMap($map)
+                    ->setResources(rand(Base::MIN_DEFAULT_RESOURCES, Base::MAX_DEFAULT_RESOURCES))
+                    ->setX($x)
+                    ->setY($y)
+                ;
+
+                $this->em->persist($base);
+                $this->indexBase($base);
+                $bases[] = $base;
+                $baseCount++;
+            }
         }
 
+        $this->output->writeln($baseCount . ' bases generated');
+
         return $bases;
+    }
+
+    protected function canHazBase($x, $y, $width)
+    {
+        $center = $width / 2;
+        $distanceToCenter = sqrt(pow($center - $x, 2) + pow($center - $y, 2));
+
+        $odds = 10000;
+        $probability = 3;
+        
+        return rand(0, $odds) < $probability;
+    }
+
+    protected function canHazPadding($x, $y, $minDistance)
+    {
+        for ($i = $x - floor($minDistance); $i <= $x + floor($minDistance); $i++) {
+            if (isset($this->bases[$i])) {
+                for ($j = $y - floor($minDistance); $j <= $y + floor($minDistance); $j++) {
+                    if (isset($this->bases[$i][$j])) return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    protected function indexBase(Base $base)
+    {
+        $this->bases[$base->getX()][$base->getY()] = $base;
     }
 }

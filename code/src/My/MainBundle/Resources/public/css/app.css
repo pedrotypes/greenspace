@@ -1,11 +1,39 @@
 body {
-    background: #333533;
-    color: #ddd;
+    margin-bottom: 2em;
 }
 
-a {
-    color: #ddd;
+.map-wrapper {
+    background: #111;
+    padding: 50px;
 }
-a:hover {
-    color: #fff;
+
+.map-container {
+    display: block;
+    margin: 0 auto;
+    position: relative;
+}
+
+.base-overlay {
+    display: block;
+    position: absolute;
+    border-radius: 500px;
+    background: #fff;
+    opacity: 0.2;
+}
+
+.base-resources {
+    background: none;
+    border: 1px solid #555;
+    opacity: 1;
+}
+
+.base-core {
+    display: block;
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    border-radius: 20px;
+    background: #fff;
+    z-index: 10;
+    box-shadow: #fff 0 0 7px;
 }
