@@ -41,6 +41,7 @@
                             Running games
                         </a>
                     </li>
+                    {% block navbar %}{% endblock %}
                 </ul>
 
                 <ul class="nav navbar-nav navbar-right">
@@ -80,14 +81,19 @@
 
 
     {% block javascripts %}
+        <script>
+            var base_url = '{{ path('homepage') }}';
+        </script>
         
         {% javascripts
-            '@MyMainBundle/Resources/public/js/*'
+            '@MyMainBundle/Resources/public/js/jquery-1.10.2.js'
             '@MyMainBundle/Resources/public/bootstrap/js/*'
             output='/compiled/js/main.js'
         %}
             <script type="text/javascript" src="{{ asset_url }}"></script>
         {% endjavascripts %}
     {% endblock %}
+
+    {% block jsTemplates %}{% endblock %}
 </body>
 </html>

@@ -6,6 +6,10 @@ games_show:
     pattern: /games/{game}
     defaults: { _controller: MyMainBundle:Games:show }
 
+games_state:
+    pattern: /games/{game}/state
+    defaults: { _controller: MyMainBundle:Games:state }
+
 games_join:
     pattern: /games/{game}/join
     defaults: { _controller: MyMainBundle:Games:join }

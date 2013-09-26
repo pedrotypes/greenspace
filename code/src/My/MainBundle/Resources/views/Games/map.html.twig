@@ -1,35 +1,55 @@
 {% extends 'MyMainBundle::layout.html.twig' %}
 
+{% block navbar %}
+<li>
+    <a>
+        {{ game.name }}
+
+        <button id="map-refresh" class="btn btn-xs">refresh</button>
+    </a>
+</li>
+
+{% endblock %}
+
 {% block content %}
-<p class="lead">
-    {{ game.name }}
-</p>
 
 <div class="map-wrapper">
-    <div class="map-container" style="
+    <div id="map-container" class="map-container" style="
         width: {{ map.width }}px;
         height: {{ map.width }}px;
-    ">
-        {% for b in bases %}
-        <div class="base-overlay base-radius" style="
-            top: {{ b.x - 30}}px;
-            left: {{ b.y - 30 }}px;
-        "></div>
+    "></div>
 
-        <div class="base-overlay base-resources" style="
-            top: {{ b.x - b.resources * 2 - 1 }}px;
-            left: {{ b.y - b.resources * 2 - 1 }}px;
-            width: {{ b.resources * 4 }}px;
-            height: {{ b.resources * 4 }}px;
-        "></div>
-
-        <div class="base-core" style="
-            top: {{ b.x - 4}}px;
-            left: {{ b.y - 4 }}px;
-        "></div>
-
-        {% endfor %}
-    </div>
+    <div id="game-panel" class="game-panel">&nbsp;</div>
 </div>
 
+{% endblock %}
+
+{% block jsTemplates %}
+{% verbatim %}
+
+<script id="tpl-base-core" type="test/x-handlebars-template">
+    <div class="base-core" style="
+        top: {{ b.x - b.resources / 2 - 1 }}px;
+        left: {{ b.y - b.resources / 2 - 1 }}px;
+        width: {{ b.resources }}px;
+        height: {{ b.resources }}px;
+    "></div>
+</script>
+
+{% endverbatim %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        var gameId = {{ game.id }};
+    </script>
+    {% javascripts
+        '@MyMainBundle/Resources/public/js/raphael-min.js'
+        '@MyMainBundle/Resources/public/js/handlebars.js'
+        '@MyMainBundle/Resources/public/js/game.map.js'
+        output='/compiled/js/game.js'
+    %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
 {% endblock %}

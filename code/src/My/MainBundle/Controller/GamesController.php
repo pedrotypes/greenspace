@@ -47,17 +47,38 @@ class GamesController extends Controller
     {
         $map = $game->getMap();
         $bases = $map->getBases();
-        $indexedBases = [];
-        foreach ($bases as $base) {
-            $indexedBases[$base->getX()][$base->getY()] = $base;
-        }
-
+        
         return $this->render('MyMainBundle:Games:map.html.twig', [
             'game'  => $game,
             'map'   => $map,
             'bases' => $bases,
-            'indexedBases' => $indexedBases,
         ]);
+    }
+
+    public function stateAction(Game $game)
+    {
+        $myPlayer = $game->getPlayerForUser($this->getUser());
+        $rawBases = $game->getMap()->getBases();
+        $bases = [];
+
+        foreach ($rawBases as $b) {
+            $data = [
+                'id'        => $b->getId(),
+                'x'         => $b->getX(),
+                'y'         => $b->getY(),
+                'owned'     => $myPlayer == $b->getPlayer(),
+                'neutral'   => !$b->getPlayer(),
+                'enemy'     => $b->getPlayer() && $b->getPlayer() != $myPlayer,
+                'player'    => $b->getPlayer() ? $b->getPlayer()->getCard() : null,
+                'resources' => $b->getResources(),
+                'economy'   => $myPlayer == $b->getPlayer() ? $b->getEconomy() : null,
+                'power'     => $myPlayer == $b->getPlayer() ? $b->getPower() : null,
+            ];
+
+            $bases[] = $data;
+        }
+        
+        die(json_encode($bases));
     }
 
     public function joinAction(Game $game)

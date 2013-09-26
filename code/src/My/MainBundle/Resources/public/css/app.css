@@ -3,37 +3,21 @@ body {
 }
 
 .map-wrapper {
-    background: #111;
-    padding: 50px;
+    background: #111911;
+    padding: 50px 10px;
+    overflow: hidden;
 }
 
 .map-container {
     display: block;
     margin: 0 auto;
     position: relative;
+    float: left;
 }
 
-.base-overlay {
-    display: block;
-    position: absolute;
-    border-radius: 500px;
-    background: #fff;
-    opacity: 0.2;
-}
-
-.base-resources {
-    background: none;
-    border: 1px solid #555;
-    opacity: 1;
-}
-
-.base-core {
-    display: block;
-    position: absolute;
-    width: 5px;
-    height: 5px;
-    border-radius: 20px;
-    background: #fff;
-    z-index: 10;
-    box-shadow: #fff 0 0 7px;
+.game-panel {
+    float: left;
+    margin-left: 40px;
+    width: 380px;
+    height: 500px;
 }

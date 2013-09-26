@@ -55,4 +55,13 @@ class Player extends BaseEntity
         $this->bases = new \Doctrine\Common\Collections\ArrayCollection();
         $this->fleets = new \Doctrine\Common\Collections\ArrayCollection();
     }
+
+    public function getCard()
+    {
+        return [
+            'id'    => $this->id,
+            'user'  => $this->user->getId(),
+            'name'  => $this->user->getName(),
+        ];
+    }
 }
