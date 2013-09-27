@@ -21,7 +21,7 @@ class GameNewCommand extends ContainerAwareCommand
 
     protected $bases = [];
 
-    const DEFAULT_MAP_WIDTH = 10;
+    const DEFAULT_MAP_WIDTH = 500;
 
 
     protected function configure()
@@ -68,7 +68,7 @@ class GameNewCommand extends ContainerAwareCommand
         $map = new Map;
         $map
             ->setGame($game)
-            ->setWidth($this->input->getOption('width'))
+            ->setWidth($this->input->getOption('width') ?: 500)
         ;
 
         $this->em->persist($map);
@@ -80,17 +80,26 @@ class GameNewCommand extends ContainerAwareCommand
     protected function generateBases(Map $map)
     {
         $n = (int) $this->input->getOption('width') ?: static::DEFAULT_MAP_WIDTH;
-        $minDistance = $this->input->getOption('min-distance') ?: 10;
+        $minDistance = $this->input->getOption('min-distance') ?: 50;
         $baseCount = 0;
         $bases = [];
+
+        $starnames = file(__DIR__ . '/../../../../docs/starnames.txt');
 
         for ($x = 1; $x < $n; $x++) {
             for ($y = 1; $y < $n; $y++) {
                 if (!$this->canHazBase($x, $y, $n)) continue;
                 if (!$this->canHazPadding($x, $y, $minDistance)) continue;
+                if (count($starnames) == 0) continue;
+
+                $nameIndex = rand(0, count($starnames)-1);
+                $name = trim($starnames[$nameIndex]);
+                unset($starnames[$nameIndex]);
+                $starnames = array_values($starnames);
 
                 $base = new Base;
                 $base
+                    ->setName($name)
                     ->setMap($map)
                     ->setResources(rand(Base::MIN_DEFAULT_RESOURCES, Base::MAX_DEFAULT_RESOURCES))
                     ->setX($x)

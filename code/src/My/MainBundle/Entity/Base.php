@@ -18,6 +18,12 @@ class Base extends BaseEntity
     const MIN_DEFAULT_RESOURCES = 5;
     const MAX_DEFAULT_RESOURCES = 10;
 
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $name;
+    public function setName($name) { $this->name = $name; return $this; }
+    public function getName() { return $this->name; }
 
     /**
      * @ORM\ManyToOne(targetEntity="Map", inversedBy="bases")
@@ -56,7 +62,7 @@ class Base extends BaseEntity
     public function getFleets() { return $this->fleets; }
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="string")
      */
     private $resources = 1;
     public function setResources($resources) { $this->resources = $resources; return $this; }
@@ -90,5 +96,22 @@ class Base extends BaseEntity
         $this->power += $this->economy;
 
         return $this;
+    }
+
+    public function getPlayerCard()
+    {
+        return $this->player ?
+            [
+                'id'    => $this->id,
+                'user'  => $this->player->getUser()->getId(),
+                'name'  => $this->player->getUser()->getName(),
+            ]
+            :
+            [
+                'id'    => null,
+                'user'  => null,
+                'name'  => 'Neutral',
+            ]
+        ;
     }
 }

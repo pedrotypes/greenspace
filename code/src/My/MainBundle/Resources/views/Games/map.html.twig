@@ -15,8 +15,8 @@
 
 <div class="map-wrapper">
     <div id="map-container" class="map-container" style="
-        width: {{ map.width }}px;
-        height: {{ map.width }}px;
+        width: {{ map.width + 50}}px;
+        height: {{ map.width + 50}}px;
     "></div>
 
     <div id="game-panel" class="game-panel">&nbsp;</div>
@@ -27,13 +27,26 @@
 {% block jsTemplates %}
 {% verbatim %}
 
-<script id="tpl-base-core" type="test/x-handlebars-template">
-    <div class="base-core" style="
-        top: {{ b.x - b.resources / 2 - 1 }}px;
-        left: {{ b.y - b.resources / 2 - 1 }}px;
-        width: {{ b.resources }}px;
-        height: {{ b.resources }}px;
-    "></div>
+<script id="tpl-base-panel" type="test/x-handlebars-template">
+    <div class='panel-base {{#if owned}}base-owned{{/if}} {{#if enemy}}base-enemy{{/if}}'>
+        <h2 class='base-name'>
+            {{ name }}
+        </h2>
+        <p class='lead player-name'>
+            <i>{{ player.name }}</i>
+        </p>
+        <p>
+            Resources: {{ resources }}
+        </p>
+        <p>
+            Power: {{ power }}
+            {{#if owned}}
+                {{#if power}}
+                    <a href="javascript: void(0)" class="control">make fleet</a>
+                {{/if}}
+            {{/if}}
+        </p>
+    </div>
 </script>
 
 {% endverbatim %}
@@ -43,6 +56,7 @@
     {{ parent() }}
     <script>
         var gameId = {{ game.id }};
+        var playerId = {{ player.id }};
     </script>
     {% javascripts
         '@MyMainBundle/Resources/public/js/raphael-min.js'

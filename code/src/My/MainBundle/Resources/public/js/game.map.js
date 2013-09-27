@@ -1,7 +1,11 @@
+// Map offsets
+var ox = 50;
+var oy = 50;
+
 $G = {
     id: gameId,
     stateUri: base_url + 'play/games/' + gameId + '/state',
-    canvas: Raphael(document.getElementById('map-container', 500, 500)),
+    canvas: Raphael(document.getElementById('map-container', 500+ox, 500+oy)),
     zoom: 1,
     bases: {},
     fleets: {},
@@ -20,7 +24,7 @@ $G = {
 
             // Base core
             $G.canvas
-                .circle(base.x, base.y, base.resources / 2)
+                .circle(base.x+ox, base.y+oy, base.resources / 2)
                 .attr({
                     "fill": "#fff"
                 })
@@ -36,7 +40,7 @@ $G = {
 
             // Economy ring
             $G.canvas
-                .circle(base.x, base.y, base.resources * 1.5)
+                .circle(base.x+ox, base.y+oy, base.resources * 1.5)
                 .attr({
                     "stroke": "#444",
                     "fill": "#000",
@@ -46,7 +50,17 @@ $G = {
                 .data("base", base)
                 .click(function() {
                     var base = this.data("base");
-                    console.log("Clicked on base #" + base.id + " (x: "+base.x+", y:"+base.y+")")
+                    console.log("Selected #" + base.id);
+                    $G.drawBasePanel(base);
+                })
+            ;
+
+            // Base name
+            $G.canvas
+                .text(base.x+ox, base.y+oy + 16, base.name)
+                .attr({
+                    "fill": "#ddd",
+                    "font-size": 12
                 })
             ;
 
@@ -57,13 +71,23 @@ $G = {
 
             if (base.neutral !== true) {
                 $G.canvas
-                    .circle(base.x, base.y, 7)
+                    .circle(base.x+ox, base.y+oy, 7)
                     .attr({
                         "stroke": owner_color,
                         "stroke-width": 2
                     })
                 ;
             }
+        }
+    },
+
+    basePanelTpl: null,
+    drawBasePanel: function(base) {
+        if (!$G.basePanelTpl) {
+            var source = $("#tpl-base-panel").html();
+            var template = Handlebars.compile(source);
+
+            $("#game-panel").html(template(base));
         }
     }
 };

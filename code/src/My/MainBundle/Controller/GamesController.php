@@ -28,7 +28,6 @@ class GamesController extends Controller
         $action = $game->hasStarted() ?
             'MyMainBundle:Games:map' : 'MyMainBundle:Games:lobby'
         ;
-        $action = 'MyMainBundle:Games:map';
 
         return $this->forward($action, ['game' => $game]);
     }
@@ -52,6 +51,7 @@ class GamesController extends Controller
             'game'  => $game,
             'map'   => $map,
             'bases' => $bases,
+            'player' => $game->getPlayerForUser($this->getUser()),
         ]);
     }
 
@@ -64,15 +64,16 @@ class GamesController extends Controller
         foreach ($rawBases as $b) {
             $data = [
                 'id'        => $b->getId(),
+                'name'      => $b->getName(),
                 'x'         => $b->getX(),
                 'y'         => $b->getY(),
                 'owned'     => $myPlayer == $b->getPlayer(),
                 'neutral'   => !$b->getPlayer(),
                 'enemy'     => $b->getPlayer() && $b->getPlayer() != $myPlayer,
-                'player'    => $b->getPlayer() ? $b->getPlayer()->getCard() : null,
+                'player'    => $b->getPlayerCard(),
                 'resources' => $b->getResources(),
-                'economy'   => $myPlayer == $b->getPlayer() ? $b->getEconomy() : null,
-                'power'     => $myPlayer == $b->getPlayer() ? $b->getPower() : null,
+                'economy'   => $myPlayer == $b->getPlayer() ? $b->getEconomy() : '?',
+                'power'     => $myPlayer == $b->getPlayer() ? $b->getPower() : '?',
             ];
 
             $bases[] = $data;

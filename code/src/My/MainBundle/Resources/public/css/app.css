@@ -18,6 +18,15 @@ body {
 .game-panel {
     float: left;
     margin-left: 40px;
-    width: 380px;
-    height: 500px;
+    width: 330px;
+    height: 550px;
+    color: #bbb;
+}
+.game-panel h2 {
+    color: #ddd;
+}
+
+.base-owned .base-name,
+.base-owned .player-name {
+    color: #0b0;
 }
