@@ -114,4 +114,10 @@ class Base extends BaseEntity
             ]
         ;
     }
+
+    public function removePower($power)
+    {
+        $this->power = $this->power - (int) $power;
+        if ($this->power < 0) $this->power = 0;
+    }
 }

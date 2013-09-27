@@ -17,3 +17,8 @@ games_join:
 games_leave:
     pattern: /games/{game}/leave
     defaults: { _controller: MyMainBundle:Games:leave }
+
+
+command_fleet_create:
+    pattern: /commands/createfleet/{base}
+    defaults: { _controller: MyMainBundle:Commands:createFleet }

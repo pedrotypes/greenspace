@@ -39,10 +39,10 @@
             Resources: {{ resources }}
         </p>
         <p>
-            Power: {{ power }}
+            Ships in orbit: {{ power }}
             {{#if owned}}
                 {{#if power}}
-                    <a href="javascript: void(0)" class="control">make fleet</a>
+                    <a href="javascript: void(0)" data-base="{{ id }}" class="control control-fleet-create">make fleet</a>
                 {{/if}}
             {{/if}}
         </p>

@@ -8,19 +8,27 @@ $G = {
     canvas: Raphael(document.getElementById('map-container', 500+ox, 500+oy)),
     zoom: 1,
     bases: {},
+    basesIndex: {},
     fleets: {},
 
     refresh: function() {
-        $.getJSON($G.stateUri, function(bases) {
-            $G.canvas.clear();
-            $G.bases = bases;
-            $G.drawBases();
+        $.ajax({
+            url: $G.stateUri,
+            type: 'GET',
+            dataType: 'json',
+            async: false,
+            success: function(bases) {
+                $G.canvas.clear();
+                $G.bases = bases;
+                $G.drawBases();
+            }
         });
     },
 
     drawBases: function() {
         for (var i in $G.bases) {
             var base = $G.bases[i];
+            $G.basesIndex[base.id] = i;
 
             // Base core
             $G.canvas
@@ -50,8 +58,7 @@ $G = {
                 .data("base", base)
                 .click(function() {
                     var base = this.data("base");
-                    console.log("Selected #" + base.id);
-                    $G.drawBasePanel(base);
+                    $G.selectBase(base.id);
                 })
             ;
 
@@ -89,8 +96,46 @@ $G = {
 
             $("#game-panel").html(template(base));
         }
+    },
+
+    getBase: function(baseId) {
+        var key = $G.basesIndex[baseId];
+        return $G.bases[key];
+    },
+
+    selectBase: function(baseId) {
+        var base = $G.getBase(baseId);
+        console.log(base);
+        console.log("Selected #" + base.id);
+        $G.drawBasePanel(base);
+    },
+
+
+    // Commands
+
+    fleetCreate: function(e) {
+        var baseId = parseInt($(e.target).attr('data-base'), 10);
+        var url = base_url + 'play/commands/createfleet/' + baseId;
+        var power = prompt('How many ships?');
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            dataType: 'json',
+            data: 'power=' + power,
+            success: function(res) {
+                alert('Fleet created with ' + power + ' ships');
+                $G.refresh();
+                $G.selectBase(baseId);
+            },
+            error: function() {
+                alert('Sorry, unable to create fleet at this time');
+            }
+        });
     }
 };
 
 $G.refresh();
 $("#map-refresh").on('click', function() { $G.refresh(); });
+
+$("#game-panel").on('click', '.control-fleet-create', function(e) { $G.fleetCreate(e); });

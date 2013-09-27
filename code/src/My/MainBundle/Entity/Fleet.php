@@ -27,4 +27,11 @@ class Fleet extends BaseEntity
     private $player;
     public function setPlayer(Player $player) { $this->player = $player; return $this; }
     public function getPlayer() { return $this->player; }
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $power = 0;
+    public function setPower($power) { $this->power = $power; return $this; }
+    public function getPower() { return $this->power; }
 }
