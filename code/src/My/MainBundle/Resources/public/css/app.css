@@ -30,3 +30,7 @@ body {
 .base-owned .player-name {
     color: #0b0;
 }
+
+.fleets-list label {
+    font-weight: normal;
+}

@@ -1,6 +1,6 @@
 // Map offsets
-var ox = 50;
-var oy = 50;
+var ox = 20;
+var oy = 20;
 
 $G = {
     id: gameId,
@@ -17,9 +17,9 @@ $G = {
             type: 'GET',
             dataType: 'json',
             async: false,
-            success: function(bases) {
+            success: function(state) {
                 $G.canvas.clear();
-                $G.bases = bases;
+                $G.bases = state.bases;
                 $G.drawBases();
             }
         });
@@ -27,7 +27,7 @@ $G = {
 
     drawBases: function() {
         for (var i in $G.bases) {
-            var base = $G.bases[i];
+            var base = $G.bases[i].base;
             $G.basesIndex[base.id] = i;
 
             // Base core
@@ -105,8 +105,6 @@ $G = {
 
     selectBase: function(baseId) {
         var base = $G.getBase(baseId);
-        console.log(base);
-        console.log("Selected #" + base.id);
         $G.drawBasePanel(base);
     },
 

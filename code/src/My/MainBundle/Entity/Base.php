@@ -54,12 +54,31 @@ class Base extends BaseEntity
     public function getPlayer() { return $this->player; }
 
     /**
+     * Stationed fleets
      * @ORM\OneToMany(targetEntity="Fleet", mappedBy="base")
      */
     private $fleets;
     public function addFleet(Fleet $fleet) { $this->fleets[] = $fleet; return $this; }
     public function removeFleet(Fleet $fleet) { $this->fleets->removeElement($fleet); return $this; }
     public function getFleets() { return $this->fleets; }
+
+    /**
+     * Fleets inbound for this base
+     * @ORM\OneToMany(targetEntity="Fleet", mappedBy="destination")
+     */
+    private $inbound;
+    public function addInbound(Fleet $fleet) { $this->inbound[] = $fleet; return $this; }
+    public function removeInbound(Fleet $fleet) { $this->inbound->removeElement($fleet); return $this; }
+    public function getInbound() { return $this->inbound; }
+
+    /**
+     * Fleets leaving this base
+     * @ORM\OneToMany(targetEntity="Fleet", mappedBy="origin")
+     */
+    private $outbound;
+    public function addOutbound(Fleet $fleet) { $this->outbound[] = $fleet; return $this; }
+    public function removeOutbound(Fleet $fleet) { $this->outbound->removeElement($fleet); return $this; }
+    public function getOutbound() { return $this->outbound; }
 
     /**
      * @ORM\Column(type="string")

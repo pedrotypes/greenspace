@@ -3,6 +3,7 @@ namespace My\MainBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
 
 use My\MainBundle\Entity\Game;
 use My\MainBundle\Entity\Player;
@@ -59,27 +60,49 @@ class GamesController extends Controller
     {
         $myPlayer = $game->getPlayerForUser($this->getUser());
         $rawBases = $game->getMap()->getBases();
-        $bases = [];
+        $state = [
+            'bases' => [],
+            'fleets' => [],
+        ];
 
         foreach ($rawBases as $b) {
+            $power = $myPlayer == $b->getPlayer() ? $b->getPower() : '?';
+
             $data = [
-                'id'        => $b->getId(),
-                'name'      => $b->getName(),
-                'x'         => $b->getX(),
-                'y'         => $b->getY(),
-                'owned'     => $myPlayer == $b->getPlayer(),
-                'neutral'   => !$b->getPlayer(),
-                'enemy'     => $b->getPlayer() && $b->getPlayer() != $myPlayer,
-                'player'    => $b->getPlayerCard(),
-                'resources' => $b->getResources(),
-                'economy'   => $myPlayer == $b->getPlayer() ? $b->getEconomy() : '?',
-                'power'     => $myPlayer == $b->getPlayer() ? $b->getPower() : '?',
+                'power' => $power,
+                'base' => [
+                    'id'        => $b->getId(),
+                    'name'      => $b->getName(),
+                    'x'         => $b->getX(),
+                    'y'         => $b->getY(),
+                    'owned'     => $myPlayer == $b->getPlayer(),
+                    'neutral'   => !$b->getPlayer(),
+                    'enemy'     => $b->getPlayer() && $b->getPlayer() != $myPlayer,
+                    'player'    => $b->getPlayerCard(),
+                    'resources' => $b->getResources(),
+                    'economy'   => $myPlayer == $b->getPlayer() ? $b->getEconomy() : '?',
+                    'power'     => $power,
+                ],
+                'fleetCount' => 0,
+                'fleetPower' => 0,
+                'fleets' => [],
             ];
 
-            $bases[] = $data;
+            foreach ($b->getFleets() as $f) {
+                $data['fleetCount']++;
+                $data['power'] += $f->getPower();
+                $data['fleetPower'] += $f->getPower();
+                $data['fleets'][] = [
+                    'id'        => $f->getId(),
+                    'player'    => $f->getPlayer()->getId(),
+                    'power'     => $f->getPower(),
+                ];
+            }
+
+            $state['bases'][] = $data;
         }
-        
-        die(json_encode($bases));
+
+        return new Response(json_encode($state));
     }
 
     public function joinAction(Game $game)

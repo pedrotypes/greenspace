@@ -21,9 +21,12 @@ class CommandsController extends Controller
         if (!$power) $this->fail();
 
         $player = $base->getPlayer();
-        if (!$player) $this->fail();
-        if ($player->getUser() != $this->getUser()) $this->fail();
-        if ($power > $base->getPower()) $this->fail();
+        if (!$player)
+            return $this->fail("Is there anybody out there?");
+        if ($player->getUser() != $this->getUser()) 
+            return $this->fail("You are not who you appear to be");
+        if ($power > $base->getPower()) 
+            return $this->fail("It's over 9000");
 
         $fleet = new Fleet;
         $fleet
@@ -38,7 +41,6 @@ class CommandsController extends Controller
         $em->persist($fleet);
         $em->persist($base);
         $em->flush();
-        
 
         return new Response($fleet->getId());
     }

@@ -22,6 +22,20 @@ class Fleet extends BaseEntity
     public function getBase() { return $this->base; }
 
     /**
+     * @ORM\ManyToOne(targetEntity="Base", inversedBy="outbound")
+     */
+    private $origin;
+    public function setOrigin(Base $origin) { $this->origin = $origin; return $this; }
+    public function getOrigin() { return $this->origin; }
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Base", inversedBy="inbound")
+     */
+    private $destination;
+    public function setDestination(Base $destination) { $this->destination = $destination; return $this; }
+    public function getDestination() { return $this->destination; }
+
+    /**
      * @ORM\ManyToOne(targetEntity="Player", inversedBy="fleets")
      */
     private $player;

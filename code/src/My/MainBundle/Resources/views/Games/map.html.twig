@@ -28,24 +28,52 @@
 {% verbatim %}
 
 <script id="tpl-base-panel" type="test/x-handlebars-template">
-    <div class='panel-base {{#if owned}}base-owned{{/if}} {{#if enemy}}base-enemy{{/if}}'>
+    <div class='panel-base {{#if base.owned}}base-owned{{/if}} {{#if base.enemy}}base-enemy{{/if}}'>
         <h2 class='base-name'>
-            {{ name }}
+            {{ base.name }}
         </h2>
         <p class='lead player-name'>
-            <i>{{ player.name }}</i>
+            <i>{{ base.player.name }}</i>
+        </p>
+
+        <hr>
+        <p>
+            Resources: {{ base.resources }}
         </p>
         <p>
-            Resources: {{ resources }}
-        </p>
-        <p>
-            Ships in orbit: {{ power }}
-            {{#if owned}}
-                {{#if power}}
-                    <a href="javascript: void(0)" data-base="{{ id }}" class="control control-fleet-create">make fleet</a>
+            Stationed ships: {{ base.power }}
+            <br>Total garrison: {{ power }}
+            {{#if base.owned}}
+                {{#if base.power}}
+                    <a href="javascript: void(0)" data-base="{{ base.id }}" class="control control-fleet-create">make fleet</a>
                 {{/if}}
             {{/if}}
         </p>
+
+        {{#if fleets}}
+
+        <hr>
+        <p class='lead'>
+            {{ fleetPower }} ships in 
+            {{ fleetCount }} fleets
+        </p>
+        <ul class='fleets-list'>
+            {{#each fleets}}
+            <li>
+                <label>
+                    <input type='checkbox' value='{{ this.id }}'>
+                    {{ this.power }} ships
+                </label>
+
+                <a href='javascript: void(0)'>move</a>
+            </li>
+            {{/each}}
+        </ul>
+        <div class='fleet-controls'>
+            <button class='btn btn-xs fleet-merge'>merge</button>
+            <button class='btn btn-xs fleet-station'>station</button>
+        </div>
+        {{/if}}
     </div>
 </script>
 
