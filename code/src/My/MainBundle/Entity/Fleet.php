@@ -9,12 +9,13 @@ use My\MainBundle\Entity\Player;
 
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="My\MainBundle\Entity\FleetRepository")
  * @ORM\Table(name="fleets")
  */
 class Fleet extends BaseEntity
 {
     const DEFAULT_RANGE = 100;
+    const DEFAULT_SPEED = 1;
     
     /**
      * @ORM\ManyToOne(targetEntity="Base", inversedBy="fleets")
@@ -22,6 +23,7 @@ class Fleet extends BaseEntity
     private $base;
     public function setBase(Base $base) { $this->base = $base; return $this; }
     public function getBase() { return $this->base; }
+    public function clearBase() { $this->base = null; return $this; }
 
     /**
      * @ORM\ManyToOne(targetEntity="Base", inversedBy="outbound")
@@ -40,6 +42,15 @@ class Fleet extends BaseEntity
     public function clearDestination() { $this->destination = null; return $this; }
 
     /**
+     * Distance to destination
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $distance = 0;
+    public function setDistance($distance) { $this->distance = $distance; return $this; }
+    public function getDistance() { return $this->distance; }
+    public function move($distance) { $this->distance -= ceil($distance); return $this; }
+
+    /**
      * @ORM\ManyToOne(targetEntity="Player", inversedBy="fleets")
      */
     private $player;
@@ -52,4 +63,10 @@ class Fleet extends BaseEntity
     private $power = 0;
     public function setPower($power) { $this->power = $power; return $this; }
     public function getPower() { return $this->power; }
+
+
+    public function hasArrived()
+    {
+        return $this->destination && $this->distance <= 0;
+    }
 }

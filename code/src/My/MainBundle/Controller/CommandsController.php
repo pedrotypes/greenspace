@@ -103,6 +103,7 @@ class CommandsController extends Controller
             else {
                 $f->setOrigin($f->getBase());
                 $f->setDestination($destination);
+                $f->setDistance($f->getBase()->getDistanceToBase($destination));
             }
             
             $em->persist($f);

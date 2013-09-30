@@ -13,7 +13,7 @@ use My\MainBundle\Entity\Game;
 use My\MainBundle\Entity\Map;
 
 
-class GameTickerCommand extends ContainerAwareCommand
+class GameEconomyTickerCommand extends ContainerAwareCommand
 {
     protected $em; // EntityManager
     protected $input;
@@ -25,8 +25,8 @@ class GameTickerCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('game:ticker')
-            ->setDescription('Game ticker engine')
+            ->setName('game:ticker:fleet')
+            ->setDescription('Governs economy and ship production')
             ->addOption('sleep', null, InputOption::VALUE_REQUIRED, 'Time between turn updates, in seconds')
         ;
     }
@@ -46,9 +46,6 @@ class GameTickerCommand extends ContainerAwareCommand
             
             $this
                 ->baseProduction()
-                ->fleetMovement()
-                ->fleetCombat()
-                ->baseConquest()
             ;
 
             $output->writeln("Turn #" . $turn . " (".(microtime(true) - $startTime)."s)");
@@ -70,27 +67,6 @@ class GameTickerCommand extends ContainerAwareCommand
         }
 
         $this->em->flush();
-
-        return $this;
-    }
-
-    // All moving fleets creep towards their destinations
-    protected function fleetMovement()
-    {
-
-
-        return $this;
-    }
-
-    // Non-aligned fleets occupying the same base have to fight
-    protected function fleetCombat()
-    {
-        return $this;
-    }
-
-    // Fleets conquer the bases they're occupying
-    protected function baseConquest()
-    {
 
         return $this;
     }
