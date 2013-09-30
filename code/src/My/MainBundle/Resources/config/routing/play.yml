@@ -25,8 +25,14 @@ command_fleet_create:
     requirements:
         _method: POST
 
-command_fleet_station:
+command_fleets_station:
     pattern: /commands/stationfleets/{base}
     defaults: { _controller: MyMainBundle:Commands:stationFleets }
+    requirements:
+        _method: POST
+
+command_fleets_move:
+    pattern: /commands/movefleets/{game}
+    defaults: { _controller: MyMainBundle:Commands:moveFleets }
     requirements:
         _method: POST

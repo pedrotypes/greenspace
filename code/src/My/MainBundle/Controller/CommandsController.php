@@ -71,6 +71,38 @@ class CommandsController extends Controller
         return new Response(json_encode(['Fleets merged']));
     }
 
+    public function moveFleetsAction(Game $game)
+    {
+        $player = $game->getPlayerForUser($this->getUser());
+        $selectedFleets = $this->getRequest()->request->get('fleet');
+        $destinationId = $this->getRequest()->request->get('destination');
+        $destination = $this->getDoctrine()
+            ->getRepository('MyMainBundle:Base')
+            ->find($destinationId)
+        ;
+
+        if (!$player)
+            return $this->fail("Is there anybody out there?");
+        if (!$destination)
+            return $this->fail("Where do you think you're going?");
+
+        $allFleets = $player->getFleets();
+        if (!$this->validateSelectedFleets($selectedFleets, $allFleets))
+            return $this->fail("Who are you talking to?");
+
+        $fleets = $this->getSelectedFleets($selectedFleets, $allFleets);
+
+        $em = $this->getDoctrine()->getManager();
+        foreach ($fleets as $f) {
+            $f->setOrigin($f->getBase());
+            $f->setDestination($destination);
+            $em->persist($f);
+        }
+        $em->flush();
+
+        return new Response(json_encode(['Fleets moving']));
+    }
+
 
     protected function fail($message = '') {
         return new Response($message, 400);
@@ -85,6 +117,20 @@ class CommandsController extends Controller
                 if ($f->getId() == $sf) {
                     $found = true;
                     break;
+                }
+            }
+        }
+
+        return $found;
+    }
+
+    protected function getSelectedFleets($selectedFleets, $fleets)
+    {
+        $found = [];
+        foreach ($selectedFleets as $sf) {
+            foreach ($fleets as $f) {
+                if ($f->getId() == $sf) {
+                    $found[] = $f;
                 }
             }
         }

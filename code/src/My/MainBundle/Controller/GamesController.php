@@ -100,6 +100,7 @@ class GamesController extends Controller
                     'id'        => $f->getId(),
                     'player'    => $f->getPlayer()->getId(),
                     'power'     => $f->getPower(),
+                    'destination' => $f->getDestination() ? $f->getDestination()->getName() : null,
                 ];
             }
 

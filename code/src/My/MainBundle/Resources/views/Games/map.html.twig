@@ -58,12 +58,16 @@
             {{ fleetPower }} ships in 
             {{ fleetCount }} fleets
         </p>
-        <ul class='fleets-list'>
+        <ul class='list-unstyled fleets-list'>
             {{#each fleets}}
             <li>
                 <label>
                     <input type='checkbox' class='fleet-check' value='{{ this.id }}'>
                     {{ this.power }} ships
+
+                    {{#if this.destination}}
+                    - leaving for {{ this.destination }}
+                    {{/if}}
                 </label>
             </li>
             {{/each}}
@@ -76,7 +80,10 @@
                 <option value=''>move to...</option>
 
                 {{#each inRangeBases}}
-                    <option value="{{ this.id }}">{{ this.name }} ({{ this.distance }})</option>
+                    <option 
+                        class="fleet-select-destination" 
+                        value="{{ this.id }}"
+                    >{{ this.name }} ({{ this.distance }})</option>
                 {{/each}}
             </select>
         </div>

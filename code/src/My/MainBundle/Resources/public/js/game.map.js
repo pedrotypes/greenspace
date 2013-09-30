@@ -166,7 +166,6 @@ $G = {
             dataType: 'json',
             data: 'power=' + power,
             success: function(res) {
-                alert('Fleet created with ' + power + ' ships');
                 $G.refresh();
                 $G.selectBase(baseId);
             },
@@ -182,7 +181,6 @@ $G = {
         var fleetData = [];
         $.each(fleetIds, function(i, f) { fleetData.push('fleet[]='+f); });
         fleetData = fleetData.join('&');
-        console.log(fleetData);
 
         $.ajax({
             url: base_url + 'play/commands/stationfleets/' + baseId,
@@ -190,7 +188,6 @@ $G = {
             dataType: 'json',
             data: fleetData,
             success: function(res) {
-                alert('Fleets stationed!');
                 $G.refresh();
                 $G.selectBase(baseId);
             },
@@ -198,11 +195,38 @@ $G = {
                 alert('Sorry, unable to station fleets at this time');
             }
         });
+    },
+
+    fleetMove: function(e) {
+        var baseId = parseInt($(e.target).parent().attr("data-base"), 10);
+        var destination = parseInt($(e.target).attr("value"), 10);
+        var fleetIds = $G.getSelectedFleets();
+        var postData = ['destination='+destination];
+        $.each(fleetIds, function(i, f) { postData.push('fleet[]='+f); });
+        postData = postData.join('&');
+
+        $.ajax({
+            url: base_url + 'play/commands/movefleets/' + gameId,
+            type: 'POST',
+            dataType: 'json',
+            data: postData,
+            success: function(res) {
+                $G.refresh();
+                $G.selectBase(baseId);
+            },
+            error: function() {
+                alert('Sorry, unable to move fleets at this time');
+            }
+        });
     }
 };
+
+
+// Events
 
 $G.refresh();
 $("#map-refresh").on('click', function() { $G.refresh(); });
 $("#game-panel").on('click', '.control-fleet-create', function(e) { $G.fleetCreate(e); });
 $("#game-panel").on('change', '.fleet-check', $G.handleFleetCheck);
 $("#game-panel").on('click', '.fleet-station', $G.fleetStation);
+$("#game-panel").on('click', '.fleet-select-destination', $G.fleetMove);
