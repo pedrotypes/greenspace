@@ -32,7 +32,7 @@ class User extends BaseUser
     public function getName() { return $this->name; }
 
     /**
-     * @ORM\OneToMany(targetEntity="Player", mappedBy="player")
+     * @ORM\OneToMany(targetEntity="Player", mappedBy="user")
      */
     private $players;
     public function addPlayer(Player $base) { $this->players[] = $base; return $this; }
