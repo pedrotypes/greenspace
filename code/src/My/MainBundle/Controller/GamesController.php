@@ -85,6 +85,7 @@ class GamesController extends Controller
                 ],
                 'fleetCount' => 0,
                 'fleetPower' => 0,
+                'fleetRange' => 100,
                 'fleets' => [],
             ];
 

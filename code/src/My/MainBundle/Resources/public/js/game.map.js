@@ -104,9 +104,9 @@ $G = {
         $G.baseRanges.length = 0;
     },
 
-    drawBaseRange: function(base) {
+    drawFleetRange: function(base) {
         var range = $G.canvas
-            .circle(base.x+ox, base.y+oy, 100)
+            .circle(base.base.x+ox, base.base.y+oy, base.fleetRange)
             .attr({
                 "fill": "#fff",
                 "fill-opacity": 0.1,
@@ -129,7 +129,7 @@ $G = {
         var base = $G.getBase(baseId);
         $G.drawBasePanel(base);
 
-        $G.drawBaseRange(base.base);
+        $G.drawFleetRange(base);
     },
 
 
