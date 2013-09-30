@@ -94,8 +94,17 @@ class CommandsController extends Controller
 
         $em = $this->getDoctrine()->getManager();
         foreach ($fleets as $f) {
-            $f->setOrigin($f->getBase());
-            $f->setDestination($destination);
+            // cancel movement
+            if ($destination == $f->getBase()) {
+                $f->clearOrigin();
+                $f->clearDestination();
+            }
+            // start movement
+            else {
+                $f->setOrigin($f->getBase());
+                $f->setDestination($destination);
+            }
+            
             $em->persist($f);
         }
         $em->flush();

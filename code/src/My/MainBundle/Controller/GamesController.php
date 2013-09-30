@@ -159,7 +159,6 @@ class GamesController extends Controller
         $inRange = [];
 
         foreach ($bases as $b) {
-            if ($b == $origin) continue;
             $range = $origin->getDistanceToBase($b);
             if ($range <= Fleet::DEFAULT_RANGE) {
                 $inRange[] = [
