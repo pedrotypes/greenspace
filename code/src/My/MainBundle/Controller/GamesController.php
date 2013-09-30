@@ -62,6 +62,7 @@ class GamesController extends Controller
     {
         $myPlayer = $game->getPlayerForUser($this->getUser());
         $rawBases = $game->getMap()->getBases();
+
         $state = [
             'bases' => [],
             'fleets' => [],
@@ -105,6 +106,24 @@ class GamesController extends Controller
             }
 
             $state['bases'][] = $data;
+        }
+
+        // Showing all fleets for all players
+        // TODO: Show only detected fleets
+        foreach ($game->getPlayers() as $player) {
+            foreach ($player->getFleets() as $fleet) {
+                $state['fleets'][] = [
+                    'id'            => $fleet->getId(),
+                    'player'        => $fleet->getPlayer()->getId(),
+                    'power'         => $fleet->getPower(),
+                    'base'          => $fleet->getBaseId(),
+                    'origin'        => $fleet->getOriginId(),
+                    'destination'   => $fleet->getDestinationId(),
+                    'isMoving'      => $fleet->isMoving(),
+                    'coords'        => $fleet->getCoords(),
+                    'distance'      => $fleet->getDistance(),
+                ];
+            }
         }
 
         return new Response(json_encode($state));

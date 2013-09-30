@@ -1,6 +1,8 @@
 // Map offsets
 var ox = 20;
 var oy = 20;
+function x(n) { return ox + n; }
+function y(n) { return oy + n; }
 
 $G = {
     id: gameId,
@@ -11,6 +13,7 @@ $G = {
     basesIndex: {},
     baseRanges: [],
     fleets: {},
+    fleetIcons: [],
 
     refresh: function() {
         $.ajax({
@@ -20,8 +23,12 @@ $G = {
             async: false,
             success: function(state) {
                 $G.canvas.clear();
+
                 $G.bases = state.bases;
+                $G.fleets = state.fleets;
+
                 $G.drawBases();
+                $G.drawFleets();
             }
         });
     },
@@ -47,7 +54,7 @@ $G = {
                 // which presents a larger, friendlier click area
             ;
 
-            // Economy ring
+            // Economy ring (clickable)
             $G.canvas
                 .circle(base.x+ox, base.y+oy, base.resources * 1.5)
                 .attr({
@@ -87,6 +94,43 @@ $G = {
                 ;
             }
         }
+    },
+
+    drawFleets: function() {
+        $.each($G.fleetIcons, function(i, icon) {
+            icon.remove();
+        });
+        $G.fleetIcons.length = 0;
+
+        $.each($G.fleets, function(i, fleet) {
+            // Draw moving fleet path
+            if (fleet.isMoving) {
+                var origin = $G.getBase(fleet.origin);
+                var destination = $G.getBase(fleet.destination);
+                
+                var pathString = "M"
+                    + x(origin.base.x) + "," + y(origin.base.y)
+                    + "L" + x(destination.base.x) + "," + y(destination.base.y)
+                ;
+
+                var path = $G.canvas
+                    .path(pathString)
+                    .attr({
+                        "stroke": "#373",
+                        "stroke-width": 2
+                    })
+                    .toBack()
+                ;
+            }
+
+            // Draw the fleet itself
+            var icon = $G.canvas
+                .circle(x(fleet.coords.x), y(fleet.coords.y), 3)
+                .attr({
+                    "fill": "#0f0"
+                })
+            ;
+        });
     },
 
     basePanelTpl: null,
@@ -223,10 +267,12 @@ $G = {
 
 
 // Events
-
-$G.refresh();
 $("#map-refresh").on('click', function() { $G.refresh(); });
 $("#game-panel").on('click', '.control-fleet-create', function(e) { $G.fleetCreate(e); });
 $("#game-panel").on('change', '.fleet-check', $G.handleFleetCheck);
 $("#game-panel").on('click', '.fleet-station', $G.fleetStation);
 $("#game-panel").on('click', '.fleet-select-destination', $G.fleetMove);
+
+// Get the ball rolling
+$G.refresh();
+window.setInterval($G.refresh, 2500);

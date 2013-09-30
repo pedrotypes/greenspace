@@ -69,4 +69,43 @@ class Fleet extends BaseEntity
     {
         return $this->destination && $this->distance <= 0;
     }
+
+    public function isMoving()
+    {
+        return $this->distance != null;
+    }
+
+    public function getBaseId() { return $this->base ? $this->base->getId() : null; }
+    public function getOriginId() { return $this->origin ? $this->origin->getId() : null; }
+    public function getDestinationId() { return $this->destination ? $this->destination->getId() : null; }
+
+    public function getCoords()
+    {
+        if ($this->getBase()) return [
+            'x' => $this->getBase()->getX(),
+            'y' => $this->getBase()->getY(),
+        ];
+
+        $origin = $this->getOrigin();
+        $destination = $this->getDestination();
+        $distance = $origin->getDistanceToBase($destination);
+        $progress = 1 - $this->getDistance() / $distance;
+        $x = 0;
+        $y = 0;
+
+        $xDistance = $destination->getX() - $origin->getX();
+        $x = $origin->getX() + $xDistance * $progress;
+
+        $yDistance = $destination->getY() - $origin->getY();
+        $y = $origin->getY() + $yDistance * $progress;
+
+
+        return ['x' => ceil($x), 'y' => ceil($y)];
+    }
+
+    public function getY()
+    {
+        if ($this->getBase()) return $this->getBase()->getY();
+        return $this->getDestination()->getY() - $this->getOrigin()->getY();
+    }
 }
