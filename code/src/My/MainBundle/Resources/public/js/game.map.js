@@ -106,10 +106,11 @@ $G = {
 
     drawBaseRange: function(base) {
         var range = $G.canvas
-            .circle(base.x+ox, base.y+oy, 75)
+            .circle(base.x+ox, base.y+oy, 100)
             .attr({
                 "fill": "#fff",
-                "fill-opacity": 0.1
+                "fill-opacity": 0.1,
+                "stroke-width": 0
             })
             .toBack()
         ;
@@ -128,7 +129,7 @@ $G = {
         var base = $G.getBase(baseId);
         $G.drawBasePanel(base);
 
-        if (base.base.player.id == playerId) $G.drawBaseRange(base.base);
+        $G.drawBaseRange(base.base);
     },
 
 
