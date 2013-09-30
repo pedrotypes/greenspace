@@ -144,4 +144,9 @@ class Base extends BaseEntity
         $this->power = $this->power - (int) $power;
         if ($this->power < 0) $this->power = 0;
     }
+
+    public function getDistanceToBase(Base $target)
+    {
+        return sqrt(pow($target->getX() - $this->getX(), 2) + pow($target->getY() - $this->getY(), 2));
+    }
 }

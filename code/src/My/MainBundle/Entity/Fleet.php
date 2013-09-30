@@ -14,6 +14,8 @@ use My\MainBundle\Entity\Player;
  */
 class Fleet extends BaseEntity
 {
+    const DEFAULT_RANGE = 100;
+    
     /**
      * @ORM\ManyToOne(targetEntity="Base", inversedBy="fleets")
      */

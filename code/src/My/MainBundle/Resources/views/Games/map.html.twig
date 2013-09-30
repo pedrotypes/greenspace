@@ -65,13 +65,20 @@
                     <input type='checkbox' class='fleet-check' value='{{ this.id }}'>
                     {{ this.power }} ships
                 </label>
-
-                <a href='javascript: void(0)'>move</a>
             </li>
             {{/each}}
         </ul>
         <div class='fleet-control' style='display: none;'>
-            <button data-base='{{ base.id }}' class='btn btn-xs fleet-station'>move to garrison</button>
+            With selected fleets... <br>
+
+            <button data-base='{{ base.id }}' class='btn btn-xs fleet-station'>garrison</button>
+            <select data-base='{{ base.id }}' class='fleet-move'>
+                <option value=''>move to...</option>
+
+                {{#each inRangeBases}}
+                    <option value="{{ this.id }}">{{ this.name }} ({{ this.distance }})</option>
+                {{/each}}
+            </select>
         </div>
         {{/if}}
     </div>

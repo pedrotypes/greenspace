@@ -7,6 +7,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 use My\MainBundle\Entity\Game;
 use My\MainBundle\Entity\Player;
+use My\MainBundle\Entity\Fleet;
+use My\MainBundle\Entity\Base;
 
 
 /**
@@ -85,7 +87,8 @@ class GamesController extends Controller
                 ],
                 'fleetCount' => 0,
                 'fleetPower' => 0,
-                'fleetRange' => 100,
+                'fleetRange' => Fleet::DEFAULT_RANGE,
+                'inRangeBases' => $this->getBasesInRange($b, $rawBases, $myPlayer),
                 'fleets' => [],
             ];
 
@@ -144,5 +147,34 @@ class GamesController extends Controller
         return $this->redirect($this->generateUrl('games_show', [
             'game' => $game->getId(),
         ]));
+    }
+
+
+    protected function getBasesInRange(Base $origin, $bases, Player $player)
+    {
+        // skip bases not belonging to active player
+        if ($origin->getPlayer() != $player) return [];
+
+        $inRange = [];
+
+        foreach ($bases as $b) {
+            if ($b == $origin) continue;
+            $range = $origin->getDistanceToBase($b);
+            if ($range <= Fleet::DEFAULT_RANGE) {
+                $inRange[] = [
+                    'id'        => $b->getId(),
+                    'name'      => $b->getName(),
+                    'distance'  => ceil($range),
+                ];
+            }
+        }
+
+        usort($inRange, function($a, $b) {
+            if ($a['distance'] > $b['distance']) return 1;
+            elseif ($a['distance'] < $b['distance']) return -1;
+            else return 0;
+        });
+
+        return $inRange;
     }
 }
