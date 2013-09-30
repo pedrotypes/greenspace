@@ -9,6 +9,7 @@ $G = {
     zoom: 1,
     bases: {},
     basesIndex: {},
+    baseRanges: [],
     fleets: {},
 
     refresh: function() {
@@ -98,14 +99,57 @@ $G = {
         }
     },
 
+    clearBaseOverlays: function() {
+        $.each($G.baseRanges, function(i, e) { e.remove(); });
+        $G.baseRanges.length = 0;
+    },
+
+    drawBaseRange: function(base) {
+        var range = $G.canvas
+            .circle(base.x+ox, base.y+oy, 75)
+            .attr({
+                "fill": "#fff",
+                "fill-opacity": 0.1
+            })
+            .toBack()
+        ;
+
+        $G.baseRanges.push(range);
+    },
+
     getBase: function(baseId) {
         var key = $G.basesIndex[baseId];
         return $G.bases[key];
     },
 
     selectBase: function(baseId) {
+        $G.clearBaseOverlays();
+
         var base = $G.getBase(baseId);
         $G.drawBasePanel(base);
+
+        if (base.base.player.id == playerId) $G.drawBaseRange(base.base);
+    },
+
+
+    // Fleet controls
+
+    getSelectedFleets: function() {
+        var fleets = [];
+        var checkboxes = $("#game-panel .fleet-check:checked");
+        $.each(checkboxes, function(i, c) {
+            fleets.push(c.value);
+        });
+
+        return fleets;
+    },
+
+    handleFleetCheck: function() {
+        var checked = $G.getSelectedFleets();
+        var fleetcontrol = $(".fleet-control");
+
+        if (checked.length > 0) fleetcontrol.show();
+        else fleetcontrol.hide();
     },
 
 
@@ -113,11 +157,10 @@ $G = {
 
     fleetCreate: function(e) {
         var baseId = parseInt($(e.target).attr('data-base'), 10);
-        var url = base_url + 'play/commands/createfleet/' + baseId;
         var power = prompt('How many ships?');
 
         $.ajax({
-            url: url,
+            url: base_url + 'play/commands/createfleet/' + baseId,
             type: 'POST',
             dataType: 'json',
             data: 'power=' + power,
@@ -130,10 +173,35 @@ $G = {
                 alert('Sorry, unable to create fleet at this time');
             }
         });
+    },
+
+    fleetStation: function(e) {
+        var baseId = parseInt($(e.target).attr('data-base'), 10);
+        var fleetIds = $G.getSelectedFleets();
+        var fleetData = [];
+        $.each(fleetIds, function(i, f) { fleetData.push('fleet[]='+f); });
+        fleetData = fleetData.join('&');
+        console.log(fleetData);
+
+        $.ajax({
+            url: base_url + 'play/commands/stationfleets/' + baseId,
+            type: 'POST',
+            dataType: 'json',
+            data: fleetData,
+            success: function(res) {
+                alert('Fleets stationed!');
+                $G.refresh();
+                $G.selectBase(baseId);
+            },
+            error: function() {
+                alert('Sorry, unable to station fleets at this time');
+            }
+        });
     }
 };
 
 $G.refresh();
 $("#map-refresh").on('click', function() { $G.refresh(); });
-
 $("#game-panel").on('click', '.control-fleet-create', function(e) { $G.fleetCreate(e); });
+$("#game-panel").on('change', '.fleet-check', $G.handleFleetCheck);
+$("#game-panel").on('click', '.fleet-station', $G.fleetStation);

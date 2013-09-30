@@ -22,3 +22,11 @@ games_leave:
 command_fleet_create:
     pattern: /commands/createfleet/{base}
     defaults: { _controller: MyMainBundle:Commands:createFleet }
+    requirements:
+        _method: POST
+
+command_fleet_station:
+    pattern: /commands/stationfleets/{base}
+    defaults: { _controller: MyMainBundle:Commands:stationFleets }
+    requirements:
+        _method: POST

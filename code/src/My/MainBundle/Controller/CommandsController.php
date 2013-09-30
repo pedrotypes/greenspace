@@ -45,7 +45,50 @@ class CommandsController extends Controller
         return new Response($fleet->getId());
     }
 
+    public function stationFleetsAction(Base $base)
+    {
+        $player = $base->getPlayer();
+        $fleets = $base->getFleets();
+        $selectedFleets = $this->getRequest()->request->get('fleet');
+
+        if (!$player)
+            return $this->fail("Is there anybody out there?");
+        if ($player->getUser() != $this->getUser()) 
+            return $this->fail("You are not who you appear to be");
+        if (!$this->validateSelectedFleets($selectedFleets, $fleets))
+            return $this->fail("Who are you talking to?");
+
+        $em = $this->getDoctrine()->getManager();
+        foreach ($fleets as $f) {
+            if (in_array($f->getId(), $selectedFleets)) {
+                $base->addPower($f->getPower());
+                $em->remove($f);
+            }
+        }
+
+        $em->flush();
+
+        return new Response(json_encode(['Fleets merged']));
+    }
+
+
     protected function fail($message = '') {
         return new Response($message, 400);
+    }
+
+    protected function validateSelectedFleets($selectedFleets, $fleets)
+    {
+        $found = false;
+        foreach ($selectedFleets as $sf) {
+            $found = false;
+            foreach ($fleets as $f) {
+                if ($f->getId() == $sf) {
+                    $found = true;
+                    break;
+                }
+            }
+        }
+
+        return $found;
     }
 }

@@ -121,7 +121,7 @@ class Base extends BaseEntity
     {
         return $this->player ?
             [
-                'id'    => $this->id,
+                'id'    => $this->player->getId(),
                 'user'  => $this->player->getUser()->getId(),
                 'name'  => $this->player->getUser()->getName(),
             ]
@@ -132,6 +132,11 @@ class Base extends BaseEntity
                 'name'  => 'Neutral',
             ]
         ;
+    }
+
+    public function addPower($power) {
+        $this->power += (int) $power;
+        if ($this->power < 0) $this->power = 0;
     }
 
     public function removePower($power)

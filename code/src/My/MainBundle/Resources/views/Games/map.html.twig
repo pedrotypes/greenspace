@@ -41,13 +41,14 @@
             Resources: {{ base.resources }}
         </p>
         <p>
-            Stationed ships: {{ base.power }}
-            <br>Total garrison: {{ power }}
+            Total ships: {{ power }}
+            <br>Garrisoned ships: {{ base.power }}
             {{#if base.owned}}
                 {{#if base.power}}
                     <a href="javascript: void(0)" data-base="{{ base.id }}" class="control control-fleet-create">make fleet</a>
                 {{/if}}
             {{/if}}
+
         </p>
 
         {{#if fleets}}
@@ -61,7 +62,7 @@
             {{#each fleets}}
             <li>
                 <label>
-                    <input type='checkbox' value='{{ this.id }}'>
+                    <input type='checkbox' class='fleet-check' value='{{ this.id }}'>
                     {{ this.power }} ships
                 </label>
 
@@ -69,9 +70,8 @@
             </li>
             {{/each}}
         </ul>
-        <div class='fleet-controls'>
-            <button class='btn btn-xs fleet-merge'>merge</button>
-            <button class='btn btn-xs fleet-station'>station</button>
+        <div class='fleet-control' style='display: none;'>
+            <button data-base='{{ base.id }}' class='btn btn-xs fleet-station'>move to garrison</button>
         </div>
         {{/if}}
     </div>
