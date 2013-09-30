@@ -77,7 +77,18 @@ class Fleet extends BaseEntity
 
     public function getBaseId() { return $this->base ? $this->base->getId() : null; }
     public function getOriginId() { return $this->origin ? $this->origin->getId() : null; }
-    public function getDestinationId() { return $this->destination ? $this->destination->getId() : null; }
+    public function getDestinationData()
+    {
+        return $this->destination ? 
+        [
+            'id' => $this->destination->getId(),
+            'x' => $this->destination->getX(),
+            'y'=> $this->destination->getY(),
+            'timeleft' => $this->getTimeLeftToDestination(),
+        ] : [
+            'id' => null, 'x' => null, 'y' => null,
+        ];
+    }
 
     public function getCoords()
     {
@@ -107,5 +118,12 @@ class Fleet extends BaseEntity
     {
         if ($this->getBase()) return $this->getBase()->getY();
         return $this->getDestination()->getY() - $this->getOrigin()->getY();
+    }
+
+    protected function getTimeLeftToDestination()
+    {
+        if (!$this->destination) return;
+
+        return $this->distance / Fleet::DEFAULT_SPEED;
     }
 }

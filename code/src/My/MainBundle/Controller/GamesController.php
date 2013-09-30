@@ -118,7 +118,7 @@ class GamesController extends Controller
                     'power'         => $fleet->getPower(),
                     'base'          => $fleet->getBaseId(),
                     'origin'        => $fleet->getOriginId(),
-                    'destination'   => $fleet->getDestinationId(),
+                    'destination'   => $fleet->getDestinationData(),
                     'isMoving'      => $fleet->isMoving(),
                     'coords'        => $fleet->getCoords(),
                     'distance'      => $fleet->getDistance(),

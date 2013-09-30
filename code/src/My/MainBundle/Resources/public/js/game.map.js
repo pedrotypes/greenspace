@@ -9,6 +9,7 @@ $G = {
     stateUri: base_url + 'play/games/' + gameId + '/state',
     canvas: Raphael(document.getElementById('map-container', 500+ox, 500+oy)),
     zoom: 1,
+    refreshInterval: 5000,
     bases: {},
     basesIndex: {},
     baseRanges: [],
@@ -106,7 +107,7 @@ $G = {
             // Draw moving fleet path
             if (fleet.isMoving) {
                 var origin = $G.getBase(fleet.origin);
-                var destination = $G.getBase(fleet.destination);
+                var destination = $G.getBase(fleet.destination.id);
                 
                 var pathString = "M"
                     + x(origin.base.x) + "," + y(origin.base.y)
@@ -130,6 +131,15 @@ $G = {
                     "fill": "#0f0"
                 })
             ;
+
+            // Animate the fleet, because awesome
+            // It might burn lots and lots and lots of cpu cycles, but hey.
+            if (fleet.isMoving) {
+                icon.animate({
+                    cx: x(fleet.destination.x),
+                    cy: y(fleet.destination.y),
+                }, parseInt(fleet.destination.timeleft, 10) * 1000);
+            }
         });
     },
 
@@ -275,4 +285,4 @@ $("#game-panel").on('click', '.fleet-select-destination', $G.fleetMove);
 
 // Get the ball rolling
 $G.refresh();
-window.setInterval($G.refresh, 2500);
+window.setInterval($G.refresh, $G.refreshInterval);
