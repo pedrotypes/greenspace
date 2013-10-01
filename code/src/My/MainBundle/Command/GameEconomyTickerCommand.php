@@ -25,9 +25,10 @@ class GameEconomyTickerCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('game:ticker:fleet')
+            ->setName('game:ticker:economy')
             ->setDescription('Governs economy and ship production')
             ->addOption('sleep', null, InputOption::VALUE_REQUIRED, 'Time between turn updates, in seconds')
+            ->addOption('game', null, InputOption::VALUE_REQUIRED, 'Game Id')
         ;
     }
 
@@ -38,6 +39,9 @@ class GameEconomyTickerCommand extends ContainerAwareCommand
         $this->output = $output;
 
         $turnSleep = $this->input->getOption('sleep') ?: static::TURN_SLEEP;
+
+        $this->game = $this->getRepository('Game')->find($this->input->getOption('game'));
+        if (!$this->game) { throw new \Exception('Invalid game'); }
 
         $turn = 0;
         while (1) {
@@ -69,5 +73,14 @@ class GameEconomyTickerCommand extends ContainerAwareCommand
         $this->em->flush();
 
         return $this;
+    }
+
+
+    protected function getRepository($entity)
+    {
+        return $this->getContainer()
+            ->get('doctrine')
+            ->getRepository('MyMainBundle:'.ucfirst($entity))
+        ;
     }
 }

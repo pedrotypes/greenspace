@@ -15,7 +15,7 @@ use My\MainBundle\Entity\Player;
 class Fleet extends BaseEntity
 {
     const DEFAULT_RANGE = 100;
-    const DEFAULT_SPEED = 1;
+    const DEFAULT_SPEED = 2;
     
     /**
      * @ORM\ManyToOne(targetEntity="Base", inversedBy="fleets")

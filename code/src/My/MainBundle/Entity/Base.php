@@ -112,7 +112,8 @@ class Base extends BaseEntity
     
     public function produceShips()
     {
-        $this->power += $this->economy;
+        // $this->power += $this->economy;
+        $this->power += $this->resources; // temporary while there's no economy
 
         return $this;
     }
