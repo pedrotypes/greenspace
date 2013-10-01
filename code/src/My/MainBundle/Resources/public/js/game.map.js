@@ -30,13 +30,14 @@ $G = {
 
                 $G.drawBases();
                 $G.drawFleets();
+                $G.drawBaseOverlays();
             }
         });
     },
 
     drawBases: function() {
-        for (var i in $G.bases) {
-            var base = $G.bases[i].base;
+        $.each($G.bases, function(i, data) {
+            var base = data.base;
             $G.basesIndex[base.id] = i;
 
             // Base core
@@ -55,7 +56,7 @@ $G = {
                 // which presents a larger, friendlier click area
             ;
 
-            // Economy ring (clickable)
+            // Economy ring
             $G.canvas
                 .circle(base.x+ox, base.y+oy, base.resources * 1.5)
                 .attr({
@@ -63,11 +64,6 @@ $G = {
                     "fill": "#000",
                     "fill-opacity": 0,
                     "cursor": "pointer"
-                })
-                .data("base", base)
-                .click(function() {
-                    var base = this.data("base");
-                    $G.selectBase(base.id);
                 })
             ;
 
@@ -79,6 +75,12 @@ $G = {
                     "font-size": 12
                 })
             ;
+        });
+    },
+
+    drawBaseOverlays: function() {
+        $.each($G.bases, function(i, data) {
+            var base = data.base;
 
             // Ownership ring
             var owner_color = '';
@@ -87,14 +89,31 @@ $G = {
 
             if (base.neutral !== true) {
                 $G.canvas
-                    .circle(base.x+ox, base.y+oy, 7)
+                    .circle(x(base.x), y(base.y), 7)
                     .attr({
                         "stroke": owner_color,
                         "stroke-width": 2
                     })
                 ;
             }
-        }
+
+            // Clickable area
+            $G.canvas
+                .circle(x(base.x), y(base.y), 10)
+                .attr({
+                    "stroke-width": 0,
+                    "fill": "#fff",
+                    "fill-opacity": 0,
+                    "cursor": "pointer"
+                })
+                .data("base", base)
+                .click(function() {
+                    var base = this.data("base");
+                    $G.selectBase(base.id);
+                })
+                .toFront()
+            ;
+        });
     },
 
     drawFleets: function() {
