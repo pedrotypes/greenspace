@@ -27,6 +27,8 @@ class CommandsController extends Controller
             return $this->fail("You are not who you appear to be");
         if ($power > $base->getPower()) 
             return $this->fail("It's over 9000");
+        if ($power <= 0)
+            return $this->fail("I see what you did there");
 
         $fleet = new Fleet;
         $fleet
