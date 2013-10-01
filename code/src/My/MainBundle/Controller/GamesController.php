@@ -99,7 +99,7 @@ class GamesController extends Controller
                 $data['fleetPower'] += $f->getPower();
                 $data['fleets'][] = [
                     'id'        => $f->getId(),
-                    'player'    => $f->getPlayer()->getId(),
+                    'player'    => $f->getPlayer()->getCard(),
                     'power'     => $f->getPower(),
                     'destination' => $f->getDestination() ? $f->getDestination()->getName() : null,
                 ];
@@ -114,7 +114,7 @@ class GamesController extends Controller
             foreach ($player->getFleets() as $fleet) {
                 $state['fleets'][] = [
                     'id'            => $fleet->getId(),
-                    'player'        => $fleet->getPlayer()->getId(),
+                    'player'        => $fleet->getPlayer()->getCard(),
                     'power'         => $fleet->getPower(),
                     'base'          => $fleet->getBaseId(),
                     'origin'        => $fleet->getOriginId(),
@@ -134,10 +134,12 @@ class GamesController extends Controller
         $me = $this->getUser();
 
         if (!$game->hasStarted() && !$game->hasUser($me)) {
+
             $player = new Player;
             $player
                 ->setUser($me)
                 ->setGame($game)
+                ->selectColor($game->getPlayers())
             ;
 
             $em = $this->getDoctrine()->getManager();

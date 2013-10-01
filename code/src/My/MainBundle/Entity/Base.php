@@ -121,17 +121,8 @@ class Base extends BaseEntity
     public function getPlayerCard()
     {
         return $this->player ?
-            [
-                'id'    => $this->player->getId(),
-                'user'  => $this->player->getUser()->getId(),
-                'name'  => $this->player->getUser()->getName(),
-            ]
-            :
-            [
-                'id'    => null,
-                'user'  => null,
-                'name'  => 'Neutral',
-            ]
+            $this->player->getCard()
+            : (new Player)->getCard()
         ;
     }
 

@@ -26,6 +26,21 @@ body {
     color: #ddd;
 }
 
+.lobby-players {
+    margin: 2em 0 3em 0;
+}
+.lobby-players li {
+    margin-bottom: 0.5em;
+}
+.playercolorsquare {
+    display: inline-block;
+    margin-right: 0.5em;
+    width: 24px;
+    height: 24px;
+    border: 1px solid #333;
+    vertical-align: middle;
+}
+
 .base-owned .base-name,
 .base-owned .player-name {
     color: #0b0;

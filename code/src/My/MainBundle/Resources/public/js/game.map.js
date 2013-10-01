@@ -1,5 +1,5 @@
 // Map offsets
-var ox = 20;
+var ox = 30;
 var oy = 20;
 function x(n) { return ox + n; }
 function y(n) { return oy + n; }
@@ -7,7 +7,7 @@ function y(n) { return oy + n; }
 $G = {
     id: gameId,
     stateUri: base_url + 'play/games/' + gameId + '/state',
-    canvas: Raphael(document.getElementById('map-container', 500+ox, 500+oy)),
+    canvas: Raphael(document.getElementById('map-container', 600, 600)),
     zoom: 1,
     refreshInterval: 5000,
     refreshCount: 0,
@@ -89,15 +89,11 @@ $G = {
             );
 
             // Ownership ring
-            var owner_color = '';
-            if (base.owned === true) owner_color = "#5f5";
-            else if (base.enemy === true) owner_color = "#f00";
-
             if (base.neutral !== true) {
                 $G.overlays.push($G.canvas
                     .circle(x(base.x), y(base.y), 7)
                     .attr({
-                        "stroke": owner_color,
+                        "stroke": base.player.color,
                         "stroke-width": 2
                     })
                 );
@@ -142,7 +138,7 @@ $G = {
                 var path = $G.canvas
                     .path(pathString)
                     .attr({
-                        "stroke": "#373",
+                        "stroke": fleet.player.color,
                         "stroke-width": 2
                     })
                     .toBack()
@@ -154,7 +150,7 @@ $G = {
             var icon = $G.canvas
                 .circle(x(fleet.coords.x), y(fleet.coords.y), 3)
                 .attr({
-                    "fill": "#0f0"
+                    "fill": fleet.player.color
                 })
             ;
 

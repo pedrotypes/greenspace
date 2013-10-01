@@ -9,10 +9,13 @@
     This game has not yet started
 </p>
 
-{{ players|length }} players
-<ul>
+<p class='lead'>
+    {{ players|length }} players
+</p>
+<ul class="list-unstyled lobby-players">
     {% for p in players %}
         <li>
+            <span class='playercolorsquare' style='background: {{ p.color }}'></span>
             <img src="{{ p.user.getGravatar(24) }}">
             {{ p.user.name }}
         </li>
