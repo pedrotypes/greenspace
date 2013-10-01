@@ -10,11 +10,13 @@ $G = {
     canvas: Raphael(document.getElementById('map-container', 500+ox, 500+oy)),
     zoom: 1,
     refreshInterval: 5000,
+    refreshCount: 0,
     bases: {},
     basesIndex: {},
     baseRanges: [],
     fleets: {},
     fleetIcons: [],
+    overlays: [],
 
     refresh: function() {
         $.ajax({
@@ -23,14 +25,18 @@ $G = {
             dataType: 'json',
             async: false,
             success: function(state) {
-                $G.canvas.clear();
+                $.each($G.overlays, function(i, o) { o.remove(); });
+                $G.overlays.length = 0;
 
                 $G.bases = state.bases;
+                if ($G.refreshCount === 0) $G.drawBases();
+                
                 $G.fleets = state.fleets;
-
-                $G.drawBases();
                 $G.drawFleets();
+
                 $G.drawBaseOverlays();
+
+                $G.refreshCount++;
             }
         });
     },
@@ -56,17 +62,6 @@ $G = {
                 // which presents a larger, friendlier click area
             ;
 
-            // Economy ring
-            $G.canvas
-                .circle(base.x+ox, base.y+oy, base.resources * 1.5)
-                .attr({
-                    "stroke": "#444",
-                    "fill": "#000",
-                    "fill-opacity": 0,
-                    "cursor": "pointer"
-                })
-            ;
-
             // Base name
             $G.canvas
                 .text(base.x+ox, base.y+oy + 16, base.name)
@@ -82,23 +77,34 @@ $G = {
         $.each($G.bases, function(i, data) {
             var base = data.base;
 
+            // Economy ring
+            $G.overlays.push($G.canvas
+                .circle(x(base.x), y(base.y), base.resources * 1.5)
+                .attr({
+                    "stroke": "#444",
+                    "fill": "#000",
+                    "fill-opacity": 0,
+                    "cursor": "pointer"
+                })
+            );
+
             // Ownership ring
             var owner_color = '';
             if (base.owned === true) owner_color = "#5f5";
             else if (base.enemy === true) owner_color = "#f00";
 
             if (base.neutral !== true) {
-                $G.canvas
+                $G.overlays.push($G.canvas
                     .circle(x(base.x), y(base.y), 7)
                     .attr({
                         "stroke": owner_color,
                         "stroke-width": 2
                     })
-                ;
+                );
             }
 
             // Clickable area
-            $G.canvas
+            $G.overlays.push($G.canvas
                 .circle(x(base.x), y(base.y), 10)
                 .attr({
                     "stroke-width": 0,
@@ -112,7 +118,7 @@ $G = {
                     $G.selectBase(base.id);
                 })
                 .toFront()
-            ;
+            );
         });
     },
 
@@ -141,6 +147,7 @@ $G = {
                     })
                     .toBack()
                 ;
+                $G.overlays.push(path);
             }
 
             // Draw the fleet itself
@@ -159,6 +166,8 @@ $G = {
                     cy: y(fleet.destination.y),
                 }, parseInt(fleet.destination.timeleft, 10) * 1000);
             }
+
+            $G.overlays.push(icon);
         });
     },
 
