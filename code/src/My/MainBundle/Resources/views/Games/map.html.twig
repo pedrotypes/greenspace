@@ -28,11 +28,11 @@
 {% verbatim %}
 
 <script id="tpl-base-panel" type="test/x-handlebars-template">
-    <div class='panel-base {{#if base.owned}}base-owned{{/if}} {{#if base.enemy}}base-enemy{{/if}}'>
-        <h2 class='base-name'>
+    <div class='panel-base'>
+        <h2 class='base-name' {{#if base.owned}}style='color: {{ base.player.color }}'{{/if}}>
             {{ base.name }}
         </h2>
-        <p class='lead player-name'>
+        <p class='lead player-name' {{#if base.owned}}style='color: {{ base.player.color }}'{{/if}}>
             <i>{{ base.player.name }}</i>
         </p>
 

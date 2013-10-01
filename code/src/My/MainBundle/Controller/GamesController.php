@@ -69,42 +69,7 @@ class GamesController extends Controller
         ];
 
         foreach ($rawBases as $b) {
-            $power = $myPlayer == $b->getPlayer() ? $b->getPower() : '?';
-
-            $data = [
-                'power' => $power,
-                'base' => [
-                    'id'        => $b->getId(),
-                    'name'      => $b->getName(),
-                    'x'         => $b->getX(),
-                    'y'         => $b->getY(),
-                    'owned'     => $myPlayer == $b->getPlayer(),
-                    'neutral'   => !$b->getPlayer(),
-                    'enemy'     => $b->getPlayer() && $b->getPlayer() != $myPlayer,
-                    'player'    => $b->getPlayerCard(),
-                    'resources' => $b->getResources(),
-                    'economy'   => $myPlayer == $b->getPlayer() ? $b->getEconomy() : '?',
-                    'power'     => $power,
-                ],
-                'fleetCount' => 0,
-                'fleetPower' => 0,
-                'fleetRange' => Fleet::DEFAULT_RANGE,
-                'inRangeBases' => $this->getBasesInRange($b, $rawBases, $myPlayer),
-                'fleets' => [],
-            ];
-
-            foreach ($b->getFleets() as $f) {
-                $data['fleetCount']++;
-                $data['power'] += $f->getPower();
-                $data['fleetPower'] += $f->getPower();
-                $data['fleets'][] = [
-                    'id'        => $f->getId(),
-                    'player'    => $f->getPlayer()->getCard(),
-                    'power'     => $f->getPower(),
-                    'destination' => $f->getDestination() ? $f->getDestination()->getName() : null,
-                ];
-            }
-
+            $data = $this->getStateDataForBase($b, $rawBases, $myPlayer);
             $state['bases'][] = $data;
         }
 
@@ -112,17 +77,8 @@ class GamesController extends Controller
         // TODO: Show only detected fleets
         foreach ($game->getPlayers() as $player) {
             foreach ($player->getFleets() as $fleet) {
-                $state['fleets'][] = [
-                    'id'            => $fleet->getId(),
-                    'player'        => $fleet->getPlayer()->getCard(),
-                    'power'         => $fleet->getPower(),
-                    'base'          => $fleet->getBaseId(),
-                    'origin'        => $fleet->getOriginId(),
-                    'destination'   => $fleet->getDestinationData(),
-                    'isMoving'      => $fleet->isMoving(),
-                    'coords'        => $fleet->getCoords(),
-                    'distance'      => $fleet->getDistance(),
-                ];
+                $data = $this->getStateDataForFleet($fleet);
+                $state['fleets'][] = $data;
             }
         }
 
@@ -197,5 +153,61 @@ class GamesController extends Controller
         });
 
         return $inRange;
+    }
+
+    protected function getStateDataForBase(Base $b, $rawBases, Player $myPlayer)
+    {
+        $power = $myPlayer == $b->getPlayer() ? $b->getPower() : '?';
+
+        $data = [
+            'power' => $power,
+            'base' => [
+                'id'        => $b->getId(),
+                'name'      => $b->getName(),
+                'x'         => $b->getX(),
+                'y'         => $b->getY(),
+                'owned'     => $myPlayer == $b->getPlayer(),
+                'neutral'   => !$b->getPlayer(),
+                'enemy'     => $b->getPlayer() && $b->getPlayer() != $myPlayer,
+                'player'    => $b->getPlayerCard(),
+                'resources' => $b->getResources(),
+                'economy'   => $myPlayer == $b->getPlayer() ? $b->getEconomy() : '?',
+                'power'     => $power,
+            ],
+            'fleetCount' => 0,
+            'fleetPower' => 0,
+            'fleetRange' => Fleet::DEFAULT_RANGE,
+            'inRangeBases' => $this->getBasesInRange($b, $rawBases, $myPlayer),
+            'fleets' => [],
+        ];
+
+        foreach ($b->getFleets() as $f) {
+            $data['fleetCount']++;
+            $data['power'] += $f->getPower();
+            $data['fleetPower'] += $f->getPower();
+            $data['fleets'][] = [
+                'id'        => $f->getId(),
+                'player'    => $f->getPlayer()->getCard(),
+                'power'     => $f->getPower(),
+                'destination' => $f->getDestination() ? $f->getDestination()->getName() : null,
+            ];
+        }
+
+        return $data;
+    }
+
+    protected function getStateDataForFleet(Fleet $fleet)
+    {
+        return [
+            'id'            => $fleet->getId(),
+            'player'        => $fleet->getPlayer()->getCard(),
+            'power'         => $fleet->getPower(),
+            'base'          => $fleet->getBaseId(),
+            'origin'        => $fleet->getOriginId(),
+            'destination'   => $fleet->getDestinationData(),
+            'isMoving'      => $fleet->isMoving(),
+            'coords'        => $fleet->getCoords(),
+            'distance'      => $fleet->getDistance(),
+        ];
     }
 }
