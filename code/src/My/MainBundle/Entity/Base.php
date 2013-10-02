@@ -159,6 +159,11 @@ class Base extends BaseEntity
 
     public function getDistanceToBase(Base $target)
     {
-        return sqrt(pow($target->getX() - $this->getX(), 2) + pow($target->getY() - $this->getY(), 2));
+        return $this->getDistance($target->getX(), $target->getY());
+    }
+
+    public function getDistance($x, $y)
+    {
+        return sqrt(pow($x - $this->getX(), 2) + pow($y - $this->getY(), 2));
     }
 }

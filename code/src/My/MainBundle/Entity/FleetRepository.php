@@ -58,7 +58,6 @@ class FleetRepository extends EntityRepository
             ->getEntityManager()
             ->createQuery("
                 SELECT f FROM MyMainBundle:Fleet f
-                JOIN f.base b
                 JOIN f.player p
                 JOIN p.game g
                 WHERE g.id = :game

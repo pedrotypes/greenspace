@@ -13,6 +13,12 @@ class BaseCollection extends CommonCollection
     protected $owned = []; // list of owned bases, indexed by base Id
     protected $visible = []; // list of visible bases, indexed by base Id
 
+    public function getOwnedBy(Player $player) {
+        $this->indexOwned($player);
+
+        return $this->owned;
+    }
+
     public function viewBy(Player $player)
     {
         $this->indexOwned($player);

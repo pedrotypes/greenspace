@@ -165,11 +165,11 @@ $G = {
             // Draw moving fleet path
             if (fleet.isMoving) {
                 var origin = $G.getBase(fleet.origin);
-                var destination = $G.getBase(fleet.destination.id);
+                var destination = $G.getBase(fleet.destination);
                 
                 var pathString = "M"
-                    + x(origin.base.x) + "," + y(origin.base.y)
-                    + "L" + x(destination.base.x) + "," + y(destination.base.y)
+                    + x(origin.x) + "," + y(origin.y)
+                    + "L" + x(destination.x) + "," + y(destination.y)
                 ;
 
                 var path = $G.canvas

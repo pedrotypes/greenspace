@@ -78,18 +78,7 @@ class Fleet extends BaseEntity
 
     public function getBaseId() { return $this->base ? $this->base->getId() : null; }
     public function getOriginId() { return $this->origin ? $this->origin->getId() : null; }
-    public function getDestinationData()
-    {
-        return $this->destination ? 
-        [
-            'id' => $this->destination->getId(),
-            'x' => $this->destination->getX(),
-            'y'=> $this->destination->getY(),
-            'timeleft' => $this->getTimeLeftToDestination(),
-        ] : [
-            'id' => null, 'x' => null, 'y' => null,
-        ];
-    }
+    public function getDestinationId() { return $this->destination ? $this->destination->getId() : null; }
 
     public function getCoords()
     {
@@ -115,16 +104,33 @@ class Fleet extends BaseEntity
         return ['x' => ceil($x), 'y' => ceil($y)];
     }
 
-    public function getY()
+    public function getX()
     {
-        if ($this->getBase()) return $this->getBase()->getY();
-        return $this->getDestination()->getY() - $this->getOrigin()->getY();
+        $coords = $this->getCoords();
+        return $coords['x'];
     }
 
-    protected function getTimeLeftToDestination()
+    public function getY()
+    {
+        $coords = $this->getCoords();
+        return $coords['y'];
+    }
+
+    public function getTimeLeftToDestination()
     {
         if (!$this->destination) return;
 
         return $this->distance / Fleet::DEFAULT_SPEED;
+    }
+
+    public function getDistanceToBase(Base $base)
+    {
+        $coords = $this->getCoords();
+        return $base->getDistance($coords['x'], $coords['y']);
+    }
+
+    public function getPlayerCard()
+    {
+        return $this->player->getCard();
     }
 }

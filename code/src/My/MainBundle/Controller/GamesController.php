@@ -81,7 +81,7 @@ class GamesController extends Controller
                 'fleets'    => $myPlayer->getFleets()->count(),
             ],
             'bases' => $bases->viewBy($myPlayer),
-            'fleets' => [],
+            'fleets' => $fleets->viewBy($myPlayer, $bases),
         ];
 
         return new Response(json_encode($state));
