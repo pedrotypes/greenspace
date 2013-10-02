@@ -76,7 +76,11 @@ $G = {
                 .text(x(base.x), y(base.y) + 16, base.name)
                 .attr({
                     "fill": "#ddd",
-                    "font-size": 12
+                    "font-size": 12,
+                    "cursor": "pointer"
+                })
+                .click(function() {
+                    $G.selectBase(base.id);
                 })
             ;
         });
@@ -108,13 +112,27 @@ $G = {
             }
 
             // Ownership ring
-            if (base.neutral !== true) {
+            if (base.player) {
                 $G.overlays.push($G.canvas
                     .circle(x(base.x), y(base.y), 7)
                     .attr({
                         "stroke": base.player.color,
                         "stroke-width": 2
                     })
+                );
+            }
+
+            // Detection ring
+            if (base.player) {
+                $G.overlays.push($G.canvas
+                    .circle(x(base.x), y(base.y), base.detection)
+                    .attr({
+                        "stroke": base.player.color,
+                        "stroke-width": 1,
+                        "stroke-dasharray": "- ",
+                        "opacity": 0.2
+                    })
+                    .toBack()
                 );
             }
 
@@ -203,7 +221,7 @@ $G = {
 
     drawFleetRange: function(base) {
         var range = $G.canvas
-            .circle(base.base.x+ox, base.base.y+oy, base.fleetRange)
+            .circle(x(base.x), y(base.y), base.jump)
             .attr({
                 "fill": "#fff",
                 "fill-opacity": 0.1,
@@ -225,7 +243,6 @@ $G = {
 
         var base = $G.getBase(baseId);
         $G.drawBasePanel(base);
-
         $G.drawFleetRange(base);
     },
 

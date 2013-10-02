@@ -5,6 +5,7 @@
 namespace My\MainBundle\Model;
 
 use My\MainBundle\Entity\Base;
+use My\MainBundle\Entity\Fleet;
 
 
 class BaseCard
@@ -58,6 +59,8 @@ class BaseCard
             $data[$f] = @$data[$f] ?: null;
         }
         $data['player'] = $this->base->getPlayerCard();
+        $data['detection'] = Base::DEFAULT_DETECTION_RANGE;
+        $data['jump'] = Fleet::DEFAULT_RANGE;
 
         return $data;
     }
