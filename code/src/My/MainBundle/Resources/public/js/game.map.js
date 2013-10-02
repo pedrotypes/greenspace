@@ -254,8 +254,9 @@ $G = {
             .circle(x(base.x), y(base.y), base.jump)
             .attr({
                 "fill": "#fff",
-                "fill-opacity": 0.1,
-                "stroke-width": 0
+                "fill-opacity": 0,
+                "stroke": "#eee",
+                "stroke-width": 1
             })
             .toBack()
         ;
