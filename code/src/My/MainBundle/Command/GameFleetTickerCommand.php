@@ -52,12 +52,11 @@ class GameFleetTickerCommand extends ContainerAwareCommand
             
             $this
                 ->fleetMovement()
-                ->fleetCombat()
                 ->baseConquest()
             ;
 
             $output->writeln("Turn #" . $turn . " (".(microtime(true) - $startTime)."s)");
-            sleep($turnSleep);
+            usleep($turnSleep * 100);
         }
     }
 
@@ -89,12 +88,6 @@ class GameFleetTickerCommand extends ContainerAwareCommand
         return $this;
     }
 
-    // Non-aligned fleets occupying the same base have to fight
-    protected function fleetCombat()
-    {
-        return $this;
-    }
-
     // Fleets conquer the bases they're occupying
     protected function baseConquest()
     {
@@ -112,6 +105,25 @@ class GameFleetTickerCommand extends ContainerAwareCommand
 
             foreach ($base->getFleets() as $fleet) {
                 $player = $player ?: $fleet->getPlayer();
+
+                // Is there a fleet here that doesn't belong to the base owner?
+                if ($base->getPower() && $base->getPlayer() && $base->getPlayer() != $fleet->getPlayer()) {
+                    // Then add base power as a defending fleet
+                    $fleet = (new Fleet)
+                        ->setPlayer($base->getPlayer())
+                        ->setBase($base)
+                        ->setPower($base->getPower())
+                    ;
+
+                    $base->setPower(0);
+                    $base->addFleet($fleet);
+
+                    $this->em->persist($fleet);
+                    $this->em->persist($base);
+                    $this->em->flush();
+                }
+
+
                 // If another player has a fleet, base cannot be conquered
                 if ($player != $fleet->getPlayer())
                     $conquered = false;
@@ -125,7 +137,7 @@ class GameFleetTickerCommand extends ContainerAwareCommand
 
             // Are there opposing fleets? It's go time!
             else {
-                $this->battle($base);
+                $this->fleetCombat($base);
             }
         }
 
@@ -145,7 +157,7 @@ class GameFleetTickerCommand extends ContainerAwareCommand
 
     // This should maybe go to a Battle class
     // And be tested *ahem*
-    protected function battle(Base $base)
+    protected function fleetCombat(Base $base)
     {
         $fleets = $base->getFleets();
         $totalPower = 0;
@@ -175,9 +187,10 @@ class GameFleetTickerCommand extends ContainerAwareCommand
         }
 
         // Deal damage
-        foreach ($sides as $side) {
+        foreach ($sides as $pid => $side) {
             $damage = $side['damage'];
 
+            // Deal damage to fleets
             foreach ($side['fleets'] as $f) {
                 // No point in doing this after all damage was assigned
                 if ($damage <= 0) continue;
@@ -193,7 +206,5 @@ class GameFleetTickerCommand extends ContainerAwareCommand
                 }
             }
         }
-
-        $this->em->flush();
     }
 }
