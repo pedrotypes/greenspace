@@ -97,6 +97,7 @@ $G = {
         $.each($G.bases, function(i, base) {
             if (base.player && base.player.id == playerId) base.owned = true;
             base.totalPower = parseInt(base.power, 10) + parseInt(base.fleetPower, 10);
+            if (isNaN(base.totalPower)) base.totalPower = "?";
 
             // Stats
             if (base.production > 0) { // Knowing the production rate implies detection
