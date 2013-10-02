@@ -54,8 +54,8 @@ class FleetCollection extends CommonCollection
             foreach ($bases->getOwnedBy($player) as $o) {
                 if ($f->getDistanceToBase($o) <= Base::DEFAULT_DETECTION_RANGE) {
                     $this->visible[$f->getId()] = $f;
+                    break;
                 }
-                break;
             }
         }
     }

@@ -82,10 +82,12 @@ class Fleet extends BaseEntity
 
     public function getCoords()
     {
-        if ($this->getBase()) return [
-            'x' => $this->getBase()->getX(),
-            'y' => $this->getBase()->getY(),
-        ];
+        if ($this->getBase()) {
+            return [
+                'x' => $this->getBase()->getX(),
+                'y' => $this->getBase()->getY(),
+            ];
+        }
 
         $origin = $this->getOrigin();
         $destination = $this->getDestination();

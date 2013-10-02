@@ -61,41 +61,43 @@
         </p>
 
         {{#if orbiting}}
+            {{#if owned}}
 
-        <hr>
-        <p class='lead'>
-            {{ fleetPower }} ships in 
-            {{ fleetCount }} fleets
-        </p>
-        <ul class='list-unstyled fleets-list'>
-            {{#each orbiting}}
-            <li>
-                <label>
-                    <input type='checkbox' class='fleet-check' value='{{ this.id }}'>
-                    {{ this.power }} ships
+            <hr>
+            <p class='lead'>
+                {{ fleetPower }} ships in 
+                {{ fleetCount }} fleets
+            </p>
+            <ul class='list-unstyled fleets-list'>
+                {{#each orbiting}}
+                <li>
+                    <label>
+                        <input type='checkbox' class='fleet-check' value='{{ this.id }}'>
+                        {{ this.power }} ships
 
-                    {{#if this.destination}}
-                    - leaving for {{ this.destination }}
-                    {{/if}}
-                </label>
-            </li>
-            {{/each}}
-        </ul>
-        <div class='fleet-control' style='display: none;'>
-            With selected fleets... <br>
-
-            <button data-base='{{ id }}' class='btn btn-xs fleet-station'>garrison</button>
-            <select data-base='{{ id }}' class='fleet-move'>
-                <option value=''>move to...</option>
-
-                {{#each inRangeBases}}
-                    <option 
-                        class="fleet-select-destination" 
-                        value="{{ this.id }}"
-                    >{{ this.name }} ({{ this.distance }})</option>
+                        {{#if this.destination}}
+                        - leaving for {{ this.destination }}
+                        {{/if}}
+                    </label>
+                </li>
                 {{/each}}
-            </select>
-        </div>
+            </ul>
+            <div class='fleet-control' style='display: none;'>
+                With selected fleets... <br>
+
+                <button data-base='{{ id }}' class='btn btn-xs fleet-station'>garrison</button>
+                <select data-base='{{ id }}' class='fleet-move'>
+                    <option value=''>move to...</option>
+
+                    {{#each inRangeBases}}
+                        <option 
+                            class="fleet-select-destination" 
+                            value="{{ this.id }}"
+                        >{{ this.name }} ({{ this.distance }})</option>
+                    {{/each}}
+                </select>
+            </div>
+            {{/if}}
         {{/if}}
 
         {{#if inbound}}
