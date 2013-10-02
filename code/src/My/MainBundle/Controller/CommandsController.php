@@ -26,7 +26,7 @@ class CommandsController extends Controller
         if ($player->getUser() != $this->getUser()) 
             return $this->fail("You are not who you appear to be");
         if ($power > $base->getPower()) 
-            return $this->fail("It's over 9000");
+            $power = $base->getPower(); // Just a soft cap here will do
         if ($power <= 0)
             return $this->fail("I see what you did there");
 

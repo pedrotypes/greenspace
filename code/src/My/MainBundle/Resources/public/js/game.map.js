@@ -4,6 +4,12 @@ var oy = 20;
 function x(n) { return ox + n; }
 function y(n) { return oy + n; }
 
+// Handlebars helpers
+Handlebars.registerHelper('basename', function(id) {
+    return $G.getBase(id).name;
+});
+
+// Game object
 $G = {
     id: gameId,
     stateUri: base_url + 'play/games/' + gameId + '/state',

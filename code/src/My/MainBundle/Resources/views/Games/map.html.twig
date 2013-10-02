@@ -76,7 +76,7 @@
                         {{ this.power }} ships
 
                         {{#if this.destination}}
-                        - leaving for {{ this.destination }}
+                        - leaving for {{basename this.destination }}
                         {{/if}}
                     </label>
                 </li>
@@ -89,7 +89,7 @@
                 <select data-base='{{ id }}' class='fleet-move'>
                     <option value=''>move to...</option>
 
-                    {{#each inRangeBases}}
+                    {{#each inFleetRange}}
                         <option 
                             class="fleet-select-destination" 
                             value="{{ this.id }}"

@@ -21,8 +21,10 @@ class Base extends BaseEntity
 
     // Used when listing bases relative to a point in space
     public $distance = null;
-    // Array of bases in range of this one
-    public $inRange = [];
+    // Array of bases in fleet range of this one
+    public $inFleetRange = [];
+    // Useful when sifting through bases as a player
+    public $isOwned = false;
 
 
     /**
@@ -165,5 +167,15 @@ class Base extends BaseEntity
     public function getDistance($x, $y)
     {
         return sqrt(pow($x - $this->getX(), 2) + pow($y - $this->getY(), 2));
+    }
+
+    public function isInDetectionRangeOf(Base $base)
+    {
+        return $this->getDistanceToBase($base) <= Base::DEFAULT_DETECTION_RANGE;
+    }
+
+    public function isInFleetRangeOf(Base $base)
+    {
+        return $this->getDistanceToBase($base) <= Fleet::DEFAULT_RANGE;
     }
 }

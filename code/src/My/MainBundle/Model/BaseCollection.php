@@ -40,7 +40,11 @@ class BaseCollection extends CommonCollection
     {
         $this->owned = [];
         foreach ($this->index as $b) {
-            if ($b->getPlayer() == $player) $this->owned[$b->getId()] = $b;
+            if ($b->getPlayer() == $player) {
+                $b->isOwned = true;
+                $b->inFleetRange = $this->getBasesInFleetRange($b);
+                $this->owned[$b->getId()] = $b;
+            }
         }
     }
 
@@ -58,11 +62,23 @@ class BaseCollection extends CommonCollection
 
             // Bases within detection range
             foreach ($this->owned as $o) {
-                if ($o->getDistanceToBase($b) <= Base::DEFAULT_DETECTION_RANGE) {
+                if ($o->isInDetectionRangeOf($b)) {
                     $this->visible[$b->getId()] = $b;
                     break;
                 }
             }
         }
+    }
+
+    protected function getBasesInFleetRange(Base $base)
+    {
+        $inRange = [];
+        foreach ($this->index as $b) {
+            if ($b->isInFleetRangeOf($base)) {
+                $inRange[] = $b;
+            }
+        }
+
+        return $inRange;
     }
 }

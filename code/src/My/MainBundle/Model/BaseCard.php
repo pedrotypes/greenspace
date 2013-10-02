@@ -46,7 +46,15 @@ class BaseCard
         $data['production'] = $this->base->getProduction();
         $data['power'] = $this->base->getPower();
         $data['fleetPower'] = $this->base->fleetPower;
-        
+
+        $data['inFleetRange'] = [];
+        foreach ($this->base->inFleetRange as $ifr) {
+            $data['inFleetRange'][] = [
+                'id'        => $ifr->getId(),
+                'name'      => $ifr->getName(),
+                'distance'  => floor($ifr->getDistanceToBase($this->base)),
+            ];
+        }
 
         return $data;
     }
