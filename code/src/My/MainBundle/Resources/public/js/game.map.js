@@ -92,8 +92,7 @@ $G = {
                 .attr({
                     "stroke": "#444",
                     "fill": "#000",
-                    "fill-opacity": 0,
-                    "cursor": "pointer"
+                    "fill-opacity": 0
                 })
             );
 
@@ -286,7 +285,10 @@ $G = {
 
     fleetMove: function(e) {
         var baseId = parseInt($(e.target).parent().attr("data-base"), 10);
-        var destination = parseInt($(e.target).attr("value"), 10);
+
+        var destination = parseInt($(e.target).val(), 10);
+        console.log(destination);
+
         var fleetIds = $G.getSelectedFleets();
         var postData = ['destination='+destination];
         $.each(fleetIds, function(i, f) { postData.push('fleet[]='+f); });
@@ -314,7 +316,7 @@ $("#map-refresh").on('click', function() { $G.refresh(); });
 $("#game-panel").on('click', '.control-fleet-create', function(e) { $G.fleetCreate(e); });
 $("#game-panel").on('change', '.fleet-check', $G.handleFleetCheck);
 $("#game-panel").on('click', '.fleet-station', $G.fleetStation);
-$("#game-panel").on('click', '.fleet-select-destination', $G.fleetMove);
+$("#game-panel").on('change', '.fleet-move', $G.fleetMove);
 
 // Get the ball rolling
 $G.refresh();
