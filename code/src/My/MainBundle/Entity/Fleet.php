@@ -73,7 +73,7 @@ class Fleet extends BaseEntity
 
     public function isMoving()
     {
-        return $this->distance != null;
+        return $this->distance != null && $this->destination && $this->origin;
     }
 
     public function getBaseId() { return $this->base ? $this->base->getId() : null; }
