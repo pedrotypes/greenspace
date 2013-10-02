@@ -96,6 +96,10 @@ class CommandsController extends Controller
 
         $em = $this->getDoctrine()->getManager();
         foreach ($fleets as $f) {
+            $distance = $f->getBase()->getDistanceToBase($destination);
+            if ($distance > Fleet::DEFAULT_RANGE)
+                return $this->fail("The hyperdrive motivator seems to be damaged");
+
             // cancel movement
             if ($destination == $f->getBase()) {
                 $f->clearOrigin();
