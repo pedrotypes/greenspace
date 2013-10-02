@@ -117,9 +117,15 @@ class GameFleetTickerCommand extends ContainerAwareCommand
                     $conquered = false;
             }
 
+            // No opposing fleets? Conquer the base
             if ($conquered) {
                 $base->setPlayer($player);
                 $this->em->persist($base);
+            }
+
+            // Are there opposing fleets? It's go time!
+            else {
+                $this->battle($base);
             }
         }
 
@@ -135,5 +141,59 @@ class GameFleetTickerCommand extends ContainerAwareCommand
             ->get('doctrine')
             ->getRepository('MyMainBundle:'.ucfirst($entity))
         ;
+    }
+
+    // This should maybe go to a Battle class
+    // And be tested *ahem*
+    protected function battle(Base $base)
+    {
+        $fleets = $base->getFleets();
+        $totalPower = 0;
+        foreach ($fleets as $f) $totalPower+= $f->getPower();
+
+        // Pick sides
+        $sides = [];
+        foreach ($fleets as $f) {
+            $key = $f->getPlayer()->getId();
+
+            @$sides[$key]['power'] += $f->getPower();
+            @$sides[$key]['fleets'][] = $f;
+        }
+
+        // Assign damage
+        foreach ($sides as $player => $myside) {
+            $opponents = [];
+            foreach ($sides as $opposingPlayer => $opposingSide) {
+                if ($opposingPlayer == $player) continue;
+
+                // What percentage of the opposing forces is this side?
+                $opponentSize = $opposingSide['power'] / ($totalPower - $myside['power']);
+
+                // Hit it with that percentage of our power
+                @$sides[$opposingPlayer]['damage'] = $myside['power'] * $opponentSize;
+            }
+        }
+
+        // Deal damage
+        foreach ($sides as $side) {
+            $damage = $side['damage'];
+
+            foreach ($side['fleets'] as $f) {
+                // No point in doing this after all damage was assigned
+                if ($damage <= 0) continue;
+
+                // Deal damage to fleet
+                $f->removePower($damage);
+                $damage -= $f->getPower();
+
+                // Remove killed fleets
+                if ($f->getPower() <= 0) {
+                    echo "Fleet #".$f->getId()." goes BOOM\n";
+                    $this->em->remove($f);
+                }
+            }
+        }
+
+        $this->em->flush();
     }
 }

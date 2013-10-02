@@ -63,6 +63,7 @@ class Fleet extends BaseEntity
     private $power = 0;
     public function setPower($power) { $this->power = $power; return $this; }
     public function getPower() { return $this->power; }
+    public function removePower($power) { $this->power -= $power; return $this; }
 
 
     public function hasArrived()
