@@ -104,6 +104,7 @@ class CommandsController extends Controller
             if ($destination == $f->getBase()) {
                 $f->clearOrigin();
                 $f->clearDestination();
+                $f->setDistance(null);
             }
             // start movement
             else {
