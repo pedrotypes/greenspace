@@ -36,10 +36,10 @@
 
 <script id="tpl-base-panel" type="test/x-handlebars-template">
     <div class='panel-base'>
-        <h2 class='base-name' {{#if base.owned}}style='color: {{ base.player.color }}'{{/if}}>
+        <h2 class='base-name' {{#if base.player}}style='color: {{ base.player.color }}'{{/if}}>
             {{ base.name }}
         </h2>
-        <p class='lead player-name' {{#if base.owned}}style='color: {{ base.player.color }}'{{/if}}>
+        <p class='lead player-name' {{#if base.player}}style='color: {{ base.player.color }}'{{/if}}>
             <i>{{ base.player.name }}</i>
         </p>
 

@@ -186,16 +186,18 @@ class GamesController extends Controller
             'fleets' => [],
         ];
 
-        foreach ($b->getFleets() as $f) {
-            $data['fleetCount']++;
-            $data['power'] += $f->getPower();
-            $data['fleetPower'] += $f->getPower();
-            $data['fleets'][] = [
-                'id'        => $f->getId(),
-                'player'    => $f->getPlayer()->getCard(),
-                'power'     => $f->getPower(),
-                'destination' => $f->getDestination() ? $f->getDestination()->getName() : null,
-            ];
+        if ($b->getPlayer() == $myPlayer) {
+            foreach ($b->getFleets() as $f) {
+                $data['fleetCount']++;
+                $data['power'] += $f->getPower();
+                $data['fleetPower'] += $f->getPower();
+                $data['fleets'][] = [
+                    'id'        => $f->getId(),
+                    'player'    => $f->getPlayer()->getCard(),
+                    'power'     => $f->getPower(),
+                    'destination' => $f->getDestination() ? $f->getDestination()->getName() : null,
+                ];
+            }
         }
 
         return $data;
