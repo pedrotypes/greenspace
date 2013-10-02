@@ -97,4 +97,12 @@ class Player extends BaseEntity
         ];
     }
 
+    public function countShips()
+    {
+        $power = 0;
+        foreach ($this->fleets as $fleet) { $power+= $fleet->getPower(); }
+        foreach ($this->bases as $base) { $power+= $base->getPower(); }
+        return $power;
+    }
+
 }

@@ -28,6 +28,8 @@ $G = {
                 $.each($G.overlays, function(i, o) { o.remove(); });
                 $G.overlays.length = 0;
 
+                $G.updateStatusBar(state);
+
                 $G.bases = state.bases;
                 if ($G.refreshCount === 0) $G.drawBases();
                 
@@ -39,6 +41,13 @@ $G = {
                 $G.refreshCount++;
             }
         });
+    },
+
+    updateStatusBar: function(state) {
+        $(".status-bases").html(state.status.bases);
+        $(".status-ships").html(state.status.ships);
+        $(".status-fleets").html(state.status.fleets);
+        $(".map-status-inner-wrapper").show();
     },
 
     drawBases: function() {

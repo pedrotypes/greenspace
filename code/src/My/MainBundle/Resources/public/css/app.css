@@ -49,3 +49,8 @@ body {
 .fleets-list label {
     font-weight: normal;
 }
+
+.map-status {
+    color: #000;
+    padding: 3px 10px;
+}

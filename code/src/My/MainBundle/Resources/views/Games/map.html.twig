@@ -13,6 +13,13 @@
 
 {% block content %}
 
+<div class="map-status" style="background: {{ player.color }}">
+    <div class="map-status-inner-wrapper" style="display: none">
+        <span class="status-bases"></span> bases |
+        <span class="status-ships"></span> ships |
+        <span class="status-fleets"></span> fleets
+    </div>
+</div>
 <div class="map-wrapper">
     <div id="map-container" class="map-container" style="
         width: {{ map.width + 100}}px;

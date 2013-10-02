@@ -64,6 +64,11 @@ class GamesController extends Controller
         $rawBases = $game->getMap()->getBases();
 
         $state = [
+            'status' => [
+                'bases'     => $myPlayer->getBases()->count(),
+                'ships'     => $myPlayer->countShips(),
+                'fleets'    => $myPlayer->getFleets()->count(),
+            ],
             'bases' => [],
             'fleets' => [],
         ];
