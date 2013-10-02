@@ -191,15 +191,6 @@ $G = {
                 })
             ;
 
-            // Animate the fleet, because awesome
-            // It might burn lots and lots and lots of cpu cycles, but hey.
-            if (fleet.isMoving) {
-                icon.animate({
-                    cx: x(fleet.destination.x),
-                    cy: y(fleet.destination.y),
-                }, parseInt(fleet.destination.timeleft, 10) * 1000);
-            }
-
             $G.overlays.push(icon);
         });
     },
