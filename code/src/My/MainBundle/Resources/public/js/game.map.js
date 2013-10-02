@@ -140,7 +140,8 @@ $G = {
                         "stroke": base.player.color,
                         "stroke-width": 1,
                         "stroke-dasharray": "- ",
-                        "opacity": 0.2
+                        "fill": base.player.color,
+                        "opacity": 0.075
                     })
                     .toBack()
                 );
