@@ -338,7 +338,7 @@ $G = {
                 $G.selectBase(baseId);
             },
             error: function() {
-                alert('Sorry, unable to station fleets at this time');
+                alert('Sorry, unable to garrison fleets at this time');
             }
         });
     },
