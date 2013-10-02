@@ -198,7 +198,7 @@ $G = {
                     .path(pathString)
                     .attr({
                         "stroke": fleet.player.color,
-                        "stroke-width": 2
+                        "stroke-width": 1
                     })
                     .toBack()
                 ;
