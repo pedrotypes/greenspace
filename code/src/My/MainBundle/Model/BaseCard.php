@@ -45,7 +45,7 @@ class BaseCard
 
         $data['production'] = $this->base->getProduction();
         $data['power'] = $this->base->getPower();
-        $data['garrison'] = $this->base->garrison;
+        $data['fleetPower'] = $this->base->fleetPower;
         
 
         return $data;

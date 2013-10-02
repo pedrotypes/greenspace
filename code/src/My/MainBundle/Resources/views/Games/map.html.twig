@@ -37,29 +37,30 @@
 
 <script id="tpl-base-panel" type="test/x-handlebars-template">
     <div class='panel-base'>
-        <h2 class='base-name' {{#if base.player}}style='color: {{ base.player.color }}'{{/if}}>
-            {{ base.name }}
+        <h2 class='base-name' {{#if player}}style='color: {{ player.color }}'{{/if}}>
+            {{ name }}
         </h2>
-        <p class='lead player-name' {{#if base.player}}style='color: {{ base.player.color }}'{{/if}}>
-            <i>{{ base.player.name }}</i>
+        <p class='lead player-name' {{#if player}}style='color: {{ player.color }}'{{/if}}>
+            <i>{{ player.name }}</i>
         </p>
 
         <hr>
         <p>
-            Resources: {{ base.resources }}
+            Resources: {{ resources }}<br>
+            Production: {{ production }}
         </p>
         <p>
-            Total ships: {{ power }}
-            <br>Garrisoned ships: {{ base.power }}
-            {{#if base.owned}}
-                {{#if base.power}}
-                    <a href="javascript: void(0)" data-base="{{ base.id }}" class="control control-fleet-create">make fleet</a>
+            Total ships: {{ totalPower }}
+            <br>Garrisoned ships: {{ power }}
+            {{#if owned}}
+                {{#if power}}
+                    <a href="javascript: void(0)" data-base="{{ id }}" class="control control-fleet-create">make fleet</a>
                 {{/if}}
             {{/if}}
 
         </p>
 
-        {{#if fleets}}
+        {{#if orbiting}}
 
         <hr>
         <p class='lead'>
@@ -67,7 +68,7 @@
             {{ fleetCount }} fleets
         </p>
         <ul class='list-unstyled fleets-list'>
-            {{#each fleets}}
+            {{#each orbiting}}
             <li>
                 <label>
                     <input type='checkbox' class='fleet-check' value='{{ this.id }}'>
@@ -83,8 +84,8 @@
         <div class='fleet-control' style='display: none;'>
             With selected fleets... <br>
 
-            <button data-base='{{ base.id }}' class='btn btn-xs fleet-station'>garrison</button>
-            <select data-base='{{ base.id }}' class='fleet-move'>
+            <button data-base='{{ id }}' class='btn btn-xs fleet-station'>garrison</button>
+            <select data-base='{{ id }}' class='fleet-move'>
                 <option value=''>move to...</option>
 
                 {{#each inRangeBases}}
@@ -95,6 +96,23 @@
                 {{/each}}
             </select>
         </div>
+        {{/if}}
+
+        {{#if inbound}}
+
+        <hr>
+        <p class='lead'>
+            {{ inbound.length }} inbound fleets
+        </p>
+        <ul class='list-unstyled fleets-list'>
+            {{#each inbound}}
+            <li style='color: {{ this.player.color }};'>
+                <strong>{{ this.power }}</strong> ships 
+                {{ this.distance }}ly away 
+                ({{ this.player.name }})
+            </li>
+            {{/each}}
+        </ul>
         {{/if}}
     </div>
 </script>

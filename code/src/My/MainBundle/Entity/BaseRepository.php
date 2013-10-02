@@ -23,7 +23,7 @@ class BaseRepository extends EntityRepository
             ->getEntityManager()
             ->createQuery("
                 SELECT
-                    b, SUM(f.power) as garrison
+                    b, SUM(f.power) as fleetPower
                 FROM MyMainBundle:Base b
                     
                 LEFT JOIN b.fleets AS f
@@ -41,7 +41,7 @@ class BaseRepository extends EntityRepository
 
         foreach ($results as $row) {
             $base = $row[0];
-            $base->garrison = $row['garrison'];
+            $base->fleetPower = $row['fleetPower'] ?: 0;
             $bases[] = $base;
         }
 

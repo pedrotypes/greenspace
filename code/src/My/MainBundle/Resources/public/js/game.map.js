@@ -34,6 +34,7 @@ $G = {
                 if ($G.refreshCount === 0) $G.drawBases();
                 
                 $G.fleets = state.fleets;
+                $G.clearBaseInbound();
                 $G.drawFleets();
 
                 $G.drawBaseOverlays();
@@ -88,11 +89,14 @@ $G = {
 
     drawBaseOverlays: function() {
         $.each($G.bases, function(i, base) {
+            if (base.player && base.player.id == playerId) base.owned = true;
+            base.totalPower = parseInt(base.power, 10) + parseInt(base.fleetPower, 10);
+
             // Stats
-            if (base.production > 0) {
+            if (base.production > 0) { // Knowing the production rate implies detection
                 // Power rating and production rate
                 $G.overlays.push($G.canvas
-                    .text(x(base.x), y(base.y) + 26, base.power + " (" + base.production + ")")
+                    .text(x(base.x), y(base.y) + 26, base.totalPower + " (" + base.production + ")")
                     .attr({
                         "fill": "#999",
                         "font-size": 10
@@ -155,6 +159,14 @@ $G = {
         });
     },
 
+    clearBaseInbound: function() {
+        $.each($G.bases, function(i, base) {
+            if (base.inbound) {
+                base.inbound.length = 0;
+            }
+        });
+    },
+
     drawFleets: function() {
         $.each($G.fleetIcons, function(i, icon) {
             icon.remove();
@@ -166,6 +178,8 @@ $G = {
             if (fleet.isMoving) {
                 var origin = $G.getBase(fleet.origin);
                 var destination = $G.getBase(fleet.destination);
+
+                $G.addInbound(fleet.destination, fleet);
                 
                 var pathString = "M"
                     + x(origin.x) + "," + y(origin.y)
@@ -183,6 +197,11 @@ $G = {
                 $G.overlays.push(path);
             }
 
+            // Report parked fleets
+            if (fleet.base) {
+                $G.addOrbiting(fleet.base, fleet);
+            }
+
             // Draw the fleet itself
             var icon = $G.canvas
                 .circle(x(fleet.coords.x), y(fleet.coords.y), 3)
@@ -191,8 +210,21 @@ $G = {
                 })
             ;
 
+
             $G.overlays.push(icon);
         });
+    },
+
+    addInbound: function(baseId, fleet) {
+        var base = $G.getBase(baseId);
+        if (!base.inbound) base.inbound = [];
+        base.inbound.push(fleet);
+    },
+
+    addOrbiting: function(baseId, fleet) {
+        var base = $G.getBase(baseId);
+        if (!base.orbiting) base.orbiting = [];
+        base.orbiting.push(fleet);
     },
 
     basePanelTpl: null,
@@ -306,7 +338,6 @@ $G = {
         var baseId = parseInt($(e.target).parent().attr("data-base"), 10);
 
         var destination = parseInt($(e.target).val(), 10);
-        console.log(destination);
 
         var fleetIds = $G.getSelectedFleets();
         var postData = ['destination='+destination];
