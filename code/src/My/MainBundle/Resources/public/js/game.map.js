@@ -52,13 +52,12 @@ $G = {
     },
 
     drawBases: function() {
-        $.each($G.bases, function(i, data) {
-            var base = data.base;
+        $.each($G.bases, function(i, base) {
             $G.basesIndex[base.id] = i;
 
             // Base core
             $G.canvas
-                .circle(base.x+ox, base.y+oy, base.resources / 2)
+                .circle(x(base.x), y(base.y), base.resources / 2)
                 .attr({
                     "fill": "#fff"
                 })
@@ -74,7 +73,7 @@ $G = {
 
             // Base name
             $G.canvas
-                .text(base.x+ox, base.y+oy + 16, base.name)
+                .text(x(base.x), y(base.y) + 16, base.name)
                 .attr({
                     "fill": "#ddd",
                     "font-size": 12
@@ -84,16 +83,14 @@ $G = {
     },
 
     drawBaseOverlays: function() {
-        $.each($G.bases, function(i, data) {
-            var base = data.base;
-
+        $.each($G.bases, function(i, base) {
             // Stats
             if (base.production > 0) {
                 // Power rating and production rate
                 $G.overlays.push($G.canvas
-                    .text(x(base.x), y(base.y) + 30, base.power + " (" + base.production + ")")
+                    .text(x(base.x), y(base.y) + 26, base.power + " (" + base.production + ")")
                     .attr({
-                        "fill": "#ccc",
+                        "fill": "#999",
                         "font-size": 10
                     })
                 );
@@ -106,6 +103,7 @@ $G = {
                         "fill": "#000",
                         "fill-opacity": 0
                     })
+                    .toBack()
                 );
             }
 

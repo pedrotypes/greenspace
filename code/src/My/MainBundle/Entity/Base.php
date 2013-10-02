@@ -17,6 +17,13 @@ class Base extends BaseEntity
 {
     const MIN_DEFAULT_RESOURCES = 5;
     const MAX_DEFAULT_RESOURCES = 10;
+    const DEFAULT_DETECTION_RANGE = 100;
+
+    // Used when listing bases relative to a point in space
+    public $distance = null;
+    // Array of bases in range of this one
+    public $inRange = [];
+
 
     /**
      * @ORM\Column(type="string")
@@ -93,6 +100,7 @@ class Base extends BaseEntity
     private $power = 0;
     public function setPower($power) { $this->power = $power; return $this; }
     public function getPower() { return $this->power; }
+    public $garrison = 0;
 
     /**
      * @ORM\Column(type="integer")
