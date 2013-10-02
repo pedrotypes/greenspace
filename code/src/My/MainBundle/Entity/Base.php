@@ -101,6 +101,13 @@ class Base extends BaseEntity
     public function setEconomy($economy) { $this->economy = $economy; return $this; }
     public function getEconomy() { return $this->economy; }
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $production = 0;
+    public function setProduction($production) { $this->production = $production; return $this; }
+    public function getProduction() { return $this->production; }
+
 
     /**
      * Constructor
@@ -109,11 +116,16 @@ class Base extends BaseEntity
     {
         $this->fleets = new \Doctrine\Common\Collections\ArrayCollection();
     }
+
+    public function conquerBy(Player $player)
+    {
+        $this->player = $player;
+        if ($this->production == 0) $this->production = $this->resources;
+    }
     
     public function produceShips()
     {
-        // $this->power += $this->economy;
-        $this->power += $this->resources; // temporary while there's no economy
+        $this->power += $this->production;
 
         return $this;
     }

@@ -47,6 +47,7 @@ $G = {
         $(".status-bases").html(state.status.bases);
         $(".status-ships").html(state.status.ships);
         $(".status-fleets").html(state.status.fleets);
+        $(".status-production").html(state.status.production);
         $(".map-status-inner-wrapper").show();
     },
 
@@ -86,15 +87,27 @@ $G = {
         $.each($G.bases, function(i, data) {
             var base = data.base;
 
-            // Economy ring
-            $G.overlays.push($G.canvas
-                .circle(x(base.x), y(base.y), base.resources * 1.5)
-                .attr({
-                    "stroke": "#444",
-                    "fill": "#000",
-                    "fill-opacity": 0
-                })
-            );
+            // Stats
+            if (base.production > 0) {
+                // Power rating and production rate
+                $G.overlays.push($G.canvas
+                    .text(x(base.x), y(base.y) + 30, base.power + " (" + base.production + ")")
+                    .attr({
+                        "fill": "#ccc",
+                        "font-size": 10
+                    })
+                );
+
+                // Production ring
+                $G.overlays.push($G.canvas
+                    .circle(x(base.x), y(base.y), base.production * 1.5)
+                    .attr({
+                        "stroke": "#444",
+                        "fill": "#000",
+                        "fill-opacity": 0
+                    })
+                );
+            }
 
             // Ownership ring
             if (base.neutral !== true) {

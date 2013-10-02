@@ -66,6 +66,7 @@ class GamesController extends Controller
         $state = [
             'status' => [
                 'bases'     => $myPlayer->getBases()->count(),
+                'production'=> $myPlayer->getProduction(),
                 'ships'     => $myPlayer->countShips(),
                 'fleets'    => $myPlayer->getFleets()->count(),
             ],
@@ -176,6 +177,7 @@ class GamesController extends Controller
                 'enemy'     => $b->getPlayer() && $b->getPlayer() != $myPlayer,
                 'player'    => $b->getPlayerCard(),
                 'resources' => $b->getResources(),
+                'production'=> $b->getProduction(),
                 'economy'   => $myPlayer == $b->getPlayer() ? $b->getEconomy() : '?',
                 'power'     => $power,
             ],

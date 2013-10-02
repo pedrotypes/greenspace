@@ -105,4 +105,11 @@ class Player extends BaseEntity
         return $power;
     }
 
+    public function getProduction()
+    {
+        $prod = 0;
+        foreach ($this->bases as $base) { $prod += $base->getProduction(); }
+
+        return $prod;
+    }
 }

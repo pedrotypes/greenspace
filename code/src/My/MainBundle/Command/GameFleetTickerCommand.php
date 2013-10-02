@@ -119,7 +119,7 @@ class GameFleetTickerCommand extends ContainerAwareCommand
 
             // No opposing fleets? Conquer the base
             if ($conquered) {
-                $base->setPlayer($player);
+                $base->conquerBy($player);
                 $this->em->persist($base);
             }
 
