@@ -39,7 +39,7 @@ class Game extends BaseEntity
     public function getName() { return $this->name; }
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="boolean")
      */
     private $hasStarted = false;
     public function setHasStarted($hasStarted) { $this->hasStarted = $hasStarted; return $this; }
@@ -47,12 +47,28 @@ class Game extends BaseEntity
     public function hasStarted() { return $this->getHasStarted(); }
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="boolean", nullable=true)
      */
     private $isRunning = false;
     public function setIsRunning($isRunning) { $this->isRunning = $isRunning; return $this; }
     public function getIsRunning() { return $this->isRunning; }
     public function isRunning() { return $this->getIsRunning(); }
+
+    /**
+     * Time to wait between ship movements, in seconds
+     * @ORM\Column(type="integer")
+     */
+    private $movementTimeout = 10;
+    public function setMovementTimeout($movementTimeout) { $this->movementTimeout = $movementTimeout; return $this; }
+    public function getMovementTimeout() { return $this->movementTimeout; }
+
+    /**
+     * Time to wait between economy and production turns
+     * @ORM\Column(type="integer")
+     */
+    private $economyTimeout = 3600;
+    public function setEconomyTimeout($economyTimeout) { $this->economyTimeout = $economyTimeout; return $this; }
+    public function getEconomyTimeout() { return $this->economyTimeout; }
 
 
     /**

@@ -1,0 +1,7 @@
+admin_games:
+    pattern:    /games
+    defaults: { _controller: MyMainBundle:Admin:games }
+
+admin_game_edit:
+    pattern:    /games/{game}/edit
+    defaults: { _controller: MyMainBundle:Admin:gameEdit }

@@ -5,3 +5,7 @@ homepage:
 play:
     resource: "@MyMainBundle/Resources/config/routing/play.yml"
     prefix:   /play
+
+admin:
+    resource: "@MyMainBundle/Resources/config/routing/admin.yml"
+    prefix:   /admin

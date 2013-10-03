@@ -1,0 +1,58 @@
+{% extends 'MyMainBundle::layout.html.twig' %}
+
+
+{% block content %}
+
+<h2>Games list</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for e in entities %}
+        {% set g = e.game %}
+        {% if g.isRunning %}
+            {% set gameClass = 'game-running' %}
+        {% elseif g.hasStarted %}
+            {% set gameClass = 'game-paused' %}
+        {% else %}
+            {% set gameClass = 'game-new' %}
+        {% endif %}
+        <tr class="{{ gameClass }}">
+            <td>#{{ g.id }}</td>
+            <td>{{ g.name }}</td>
+            <td>
+                <a name="g{{ g.id }}"></a>
+                {{ form_start(e.form, {'attr': {'class': 'form-inline'}}) }}
+
+                    <div class="form-group">
+                        {{ form_widget(e.form.name, {'attr': {'placeholder': 'Game name'}}) }}
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            {{ form_widget(e.form.isRunning) }}
+                            running
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        {{ form_widget(e.form.movementTimeout, {'attr': {'placeholder': 'Movement'}}) }}
+                    </div>
+                    <div class="form-group">
+                        {{ form_widget(e.form.economyTimeout, {'attr': {'placeholder': 'Economy'}}) }}
+                    </div>
+
+                    <button type="submit" class="btn btn-default">update</button>
+
+                {{ form_end(e.form) }}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
