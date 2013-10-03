@@ -281,9 +281,11 @@ $G = {
 
             var newPath = $G.canvas.path(detection_path);
             newPath.attr({
-                "strike-width": 0,
+                "stroke": p.player.color,
+                "stroke-width": 1,
+                "stroke-opacity": 0.5,
                 "fill": p.player.color,
-                "opacity": 0.1
+                "fill-opacity": 0.1
             }).toBack();
 
             $G.detection.push(newPath);
