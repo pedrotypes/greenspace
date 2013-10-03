@@ -45,7 +45,7 @@ $G = {
                 $G.drawFleets();
 
                 $G.drawBaseOverlays();
-                $G.drawDetectionRanges();
+                // $G.drawDetectionRanges();
 
                 $G.refreshCount++;
             }
@@ -136,19 +136,20 @@ $G = {
             }
 
             // Detection ring
-            // if (base.player) {
-            //     $G.overlays.push($G.canvas
-            //         .circle(x(base.x), y(base.y), base.detection)
-            //         .attr({
-            //             "stroke": base.player.color,
-            //             "stroke-width": 1,
-            //             "stroke-dasharray": "- ",
-            //             "fill": base.player.color,
-            //             "opacity": 0.075
-            //         })
-            //         .toBack()
-            //     );
-            // }
+            if (base.player) {
+                $G.overlays.push($G.canvas
+                    .circle(x(base.x), y(base.y), base.detection)
+                    .attr({
+                        "stroke": base.player.color,
+                        "stroke-width": 2,
+                        "stroke-dasharray": "- ",
+                        "stroke-opacity": 0.4,
+                        "fill": base.player.color,
+                        "fill-opacity": 0.075
+                    })
+                    .toBack()
+                );
+            }
 
             // Clickable area
             $G.overlays.push($G.canvas
