@@ -1,6 +1,6 @@
 // Map offsets
-var ox = 30;
-var oy = 20;
+var ox = 50;
+var oy = 50;
 function x(n) { return ox + n; }
 function y(n) { return oy + n; }
 
@@ -13,7 +13,7 @@ Handlebars.registerHelper('basename', function(id) {
 $G = {
     id: gameId,
     stateUri: base_url + 'play/games/' + gameId + '/state',
-    canvas: Raphael(document.getElementById('map-container', 600, 600)),
+    canvas: Raphael(document.getElementById('map-container', 600, 700)),
     zoom: 1,
     refreshInterval: 10000,
     refreshCount: 0,
