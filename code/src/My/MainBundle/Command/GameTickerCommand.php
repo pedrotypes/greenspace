@@ -9,6 +9,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use My\MainBundle\Entity\Base;
+use My\MainBundle\Entity\Fleet;
 use My\MainBundle\Entity\Game;
 use My\MainBundle\Entity\Map;
 
@@ -51,10 +52,10 @@ class GameTickerCommand extends ContainerAwareCommand
             foreach ($games as $game) {
                 if ($game->needsMovementUpdate()) {
                     $this->output->writeln('[M] ['.$now->format('Y-m-d H:i:s').'] Game '.$game->getId());
-                    // $this
-                    //     ->fleetMovement($game)
-                    //     ->baseConquest($game)
-                    // ;
+                    $this
+                        ->fleetMovement($game)
+                        ->baseConquest($game)
+                    ;
 
                     $game->setLastMovementUpdate($now);
                     $this->em->persist($game);
