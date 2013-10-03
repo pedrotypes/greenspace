@@ -260,10 +260,12 @@ $G = {
         });
 
         $.each(players, function(i, p) {
+            if (p.bases.length === 0) return;
+
             var detection = $G.canvas.set();
 
             $.each(p.bases, function(i, b) {
-                var range = $G.canvas.circle(x(b.x), y(b.y), b.detection);
+                var range = $G.canvas.circle(x(b.x), y(b.y), b.detection-2);
                 detection.push(range);
             });
 
@@ -279,8 +281,8 @@ $G = {
             var newPath = $G.canvas.path(detection_path);
             newPath.attr({
                 "stroke": p.player.color,
-                "stroke-width": 1,
-                "stroke-opacity": 0.5,
+                "stroke-width": 3,
+                "stroke-opacity": 0.1,
                 "fill": p.player.color,
                 "fill-opacity": 0.1
             }).toBack();
