@@ -252,10 +252,8 @@ $G = {
         $G.detection.length = 0;
 
         var players = {};
-        console.log("---");
         $.each($G.bases, function(i, b) {
             if (b.player.id) {
-                console.log(b.name);
                 if (!players[b.player.id]) players[b.player.id] = {player: b.player, bases: []};
                 players[b.player.id].bases.push(b);
             }
@@ -265,7 +263,6 @@ $G = {
             var detection = $G.canvas.set();
 
             $.each(p.bases, function(i, b) {
-                console.log(">"+b.name);
                 var range = $G.canvas.circle(x(b.x), y(b.y), b.detection);
                 detection.push(range);
             });
