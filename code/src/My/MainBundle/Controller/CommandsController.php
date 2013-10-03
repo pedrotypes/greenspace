@@ -62,7 +62,7 @@ class CommandsController extends Controller
 
         $em = $this->getDoctrine()->getManager();
         foreach ($fleets as $f) {
-            if ($f->getPlayer != $player)
+            if ($f->getPlayer() != $player)
                 return $this->fail("Leave the fleets alone");
             
             if (in_array($f->getId(), $selectedFleets)) {
