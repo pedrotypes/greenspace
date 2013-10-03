@@ -142,8 +142,7 @@ $G = {
                     .attr({
                         "stroke": base.player.color,
                         "stroke-width": 2,
-                        "stroke-dasharray": "- ",
-                        "stroke-opacity": 0.4,
+                        "stroke-opacity": 0.1,
                         "fill": base.player.color,
                         "fill-opacity": 0.075
                     })
