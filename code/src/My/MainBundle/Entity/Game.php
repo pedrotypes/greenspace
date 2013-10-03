@@ -70,6 +70,20 @@ class Game extends BaseEntity
     public function setEconomyTimeout($economyTimeout) { $this->economyTimeout = $economyTimeout; return $this; }
     public function getEconomyTimeout() { return $this->economyTimeout; }
 
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $lastEconomyUpdate;
+    public function setLastEconomyUpdate($lastEconomyUpdate) { $this->lastEconomyUpdate = $lastEconomyUpdate; return $this; }
+    public function getLastEconomyUpdate() { return $this->lastEconomyUpdate; }
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $lastMovementUpdate;
+    public function setLastMovementUpdate($lastMovementUpdate) { $this->lastMovementUpdate = $lastMovementUpdate; return $this; }
+    public function getLastMovementUpdate() { return $this->lastMovementUpdate; }
+
 
     /**
      * Constructor
@@ -91,5 +105,29 @@ class Game extends BaseEntity
     public function hasUser(User $user) 
     {
         return !!$this->getPlayerForUser($user);
+    }
+
+    public function needsMovementUpdate()
+    {
+        if (!$this->getLastMovementUpdate()) return true;
+
+        $now = time();
+        $updateRequiredTime = $this->getLastMovementUpdate()->getTimestamp()
+            + $this->getMovementTimeout();
+
+
+        return $now >= $updateRequiredTime;
+    }
+
+    public function needsEconomyUpdate()
+    {
+        if (!$this->getLastEconomyUpdate()) return true;
+
+        $now = time();
+        $updateRequiredTime = $this->getLastEconomyUpdate()->getTimestamp()
+            + $this->getEconomyTimeout();
+
+        
+        return $now >= $updateRequiredTime;
     }
 }

@@ -11,15 +11,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 use My\MainBundle\Entity\Base;
 use My\MainBundle\Entity\Game;
 use My\MainBundle\Entity\Map;
-use My\MainBundle\Entity\Fleet;
 
 
-class GameFleetTickerCommand extends ContainerAwareCommand
+class GameTickerCommand extends ContainerAwareCommand
 {
     protected $em; // EntityManager
     protected $input;
     protected $output;
-    protected $game;
 
     const TURN_SLEEP = 1; // In seconds
 
@@ -27,10 +25,8 @@ class GameFleetTickerCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('game:ticker:fleet')
-            ->setDescription('Governs fleet movement and combat')
-            ->addOption('sleep', null, InputOption::VALUE_REQUIRED, 'Time between turn updates, in seconds')
-            ->addOption('game', null, InputOption::VALUE_REQUIRED, 'Game Id')
+            ->setName('game:ticker')
+            ->setDescription('Game ticker engine')
         ;
     }
 
@@ -40,30 +36,59 @@ class GameFleetTickerCommand extends ContainerAwareCommand
         $this->input = $input;
         $this->output = $output;
 
-        $turnSleep = $this->input->getOption('sleep') ?: static::TURN_SLEEP;
-
-        $this->game = $this->getRepository('Game')->find($this->input->getOption('game'));
-        if (!$this->game) { throw new \Exception('Invalid game'); }
+        $gamesRepo = $this->getRepository('Game');
+        $fleetsRepo = $this->getRepository('Fleet');
 
         $turn = 0;
         while (1) {
             $startTime = microtime(true);
             $turn++;
-            
-            $this
-                ->fleetMovement()
-                ->baseConquest()
-            ;
+            $now = new \DateTime();
 
-            $output->writeln("Turn #" . $turn . " (".(microtime(true) - $startTime)."s)");
-            usleep($turnSleep * 100);
+            $this->em->clear();
+            $games = $gamesRepo->findByIsRunning(true);
+
+            foreach ($games as $game) {
+                if ($game->needsMovementUpdate()) {
+                    $this->output->writeln('[M] ['.$now->format('Y-m-d H:i:s').'] Game '.$game->getId());
+                    // $this
+                    //     ->fleetMovement($game)
+                    //     ->baseConquest($game)
+                    // ;
+
+                    $game->setLastMovementUpdate($now);
+                    $this->em->persist($game);
+                }
+
+                if ($game->needsEconomyUpdate()) {
+                    $this->output->writeln('[E] ['.$now->format('Y-m-d H:i:s').'] Game '.$game->getId());
+                    $this
+                        ->baseProduction($game)
+                    ;
+
+                    $game->setLastEconomyUpdate($now);
+                    $this->em->persist($game);
+                }
+            }
+
+            $this->em->flush();
+            sleep(static::TURN_SLEEP);
         }
     }
 
-    // All moving fleets creep towards their destinations
-    protected function fleetMovement()
+
+    protected function getRepository($entity)
     {
-        $fleets = $this->getRepository('Fleet')->getMoving($this->game);
+        return $this->getContainer()
+            ->get('doctrine')
+            ->getRepository('MyMainBundle:'.ucfirst($entity))
+        ;
+    }
+
+    // All moving fleets creep towards their destinations
+    protected function fleetMovement(Game $game)
+    {
+        $fleets = $this->getRepository('Fleet')->getMoving($game);
 
         foreach ($fleets as $fleet) {
             $fleet
@@ -89,9 +114,9 @@ class GameFleetTickerCommand extends ContainerAwareCommand
     }
 
     // Fleets conquer the bases they're occupying
-    protected function baseConquest()
+    protected function baseConquest(Game $game)
     {
-        $fleets = $this->getRepository('Fleet')->getOverHostileBases($this->game);
+        $fleets = $this->getRepository('Fleet')->getOverHostileBases($game);
         $bases = [];
 
         foreach ($fleets as $fleet) {
@@ -146,15 +171,6 @@ class GameFleetTickerCommand extends ContainerAwareCommand
         return $this;
     }
 
-
-    protected function getRepository($entity)
-    {
-        return $this->getContainer()
-            ->get('doctrine')
-            ->getRepository('MyMainBundle:'.ucfirst($entity))
-        ;
-    }
-
     // This should maybe go to a Battle class
     // And be tested *ahem*
     protected function fleetCombat(Base $base)
@@ -206,5 +222,22 @@ class GameFleetTickerCommand extends ContainerAwareCommand
                 }
             }
         }
+    }
+
+    // All occupied bases produce ships according to their economy rating
+    protected function baseProduction(Game $game)
+    {
+        $bases = $this->em
+            ->getRepository('MyMainBundle:Base')
+            ->findOccupied($game)
+        ;
+        foreach ($bases as $base) {
+            $base->produceShips();
+            $this->em->persist($base);
+        }
+
+        $this->em->flush();
+
+        return $this;
     }
 }
