@@ -4,15 +4,21 @@ namespace My\MainBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
 
+use My\MainBundle\Entity\Game;
+
 
 class BaseRepository extends EntityRepository
 {
-    public function findOccupied()
+    public function findOccupied(Game $game)
     {
-        $q = $this->getEntityManager()->createQuery("
-            SELECT b FROM MyMainBundle:Base b
-            WHERE b.player IS NOT NULL
-        ");
+        $q = $this->getEntityManager()
+            ->createQuery("
+                SELECT b FROM MyMainBundle:Base b
+                JOIN b.map m WITH m.game = :game
+                WHERE b.player IS NOT NULL
+            ")
+            ->setParameter(':game', $game)
+        ;
 
         return $q->getResult();
     }
