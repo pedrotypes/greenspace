@@ -56,6 +56,12 @@
                 {{#if power}}
                     <a href="javascript: void(0)" data-base="{{ id }}" class="control control-fleet-create">make fleet</a>
                 {{/if}}
+
+                {{#if totalPower}}
+                    <button type="button" data-base="{{ id }}" class="control control-fleet-merge">
+                        merge fleets & garrison
+                    </button>
+                {{/if}}
             {{/if}}
 
         </p>
@@ -110,7 +116,7 @@
             {{#each inbound}}
             <li style='color: {{ this.player.color }};'>
                 <strong>{{ this.power }}</strong> ships 
-                {{ this.distance }}ly away 
+                {{ this.timeleft }}s away 
                 ({{ this.player.name }})
             </li>
             {{/each}}

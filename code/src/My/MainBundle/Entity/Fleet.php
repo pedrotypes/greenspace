@@ -5,6 +5,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 use My\MainBundle\Entity\Base;
+use My\MainBundle\Entity\Game;
 use My\MainBundle\Entity\Player;
 
 
@@ -118,11 +119,11 @@ class Fleet extends BaseEntity
         return $coords['y'];
     }
 
-    public function getTimeLeftToDestination()
+    public function getTimeLeftToDestination(Game $game)
     {
         if (!$this->destination) return;
 
-        return $this->distance / Fleet::DEFAULT_SPEED;
+        return ($this->distance / Fleet::DEFAULT_SPEED) * $game->getMovementTimeout();
     }
 
     public function getDistanceToBase(Base $base)

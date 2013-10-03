@@ -5,12 +5,14 @@
 namespace My\MainBundle\Model;
 
 use My\MainBundle\Entity\Base;
+use My\MainBundle\Entity\Game;
 use My\MainBundle\Entity\Fleet;
 
 
 class FleetCard
 {
     protected $fleet;
+    protected $game;
 
     // Fleet attributes everyone can see
     protected $common = [
@@ -19,9 +21,10 @@ class FleetCard
     ];
 
 
-    public function __construct(Fleet $fleet)
+    public function __construct(Fleet $fleet, Game $game)
     {
         $this->fleet = $fleet;
+        $this->game = $game;
     }
 
     public function visible()
@@ -47,7 +50,7 @@ class FleetCard
         $data['base']         = $this->fleet->getBaseId();
         $data['origin']       = $this->fleet->getOriginId();
         $data['destination']  = $this->fleet->getDestinationId();
-        $data['timeleft']     = $this->fleet->getTimeLeftToDestination();
+        $data['timeleft']     = $this->fleet->getTimeLeftToDestination($this->game);
         $data['isMoving']     = $this->fleet->isMoving();
         $data['coords']       = $this->fleet->getCoords();
         $data['distance']     = $this->fleet->getDistance();

@@ -21,7 +21,7 @@ class FleetCollection extends CommonCollection
 
         $cards = [];
         foreach ($this->index as $f) {
-            $card = new FleetCard($f);
+            $card = new FleetCard($f, $player->getGame());
 
             if (isset($this->visible[$f->getId()])) $cards[] = $card->visible();
         }
