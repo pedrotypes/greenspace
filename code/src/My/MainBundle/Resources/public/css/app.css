@@ -53,3 +53,22 @@ body {
     color: #000;
     padding: 3px 10px;
 }
+
+#footer {
+    margin-top: 3em;
+    text-align: right;
+}
+#footer .container {
+    border-top: 1px solid #ddd;
+}
+
+.game-running {
+    color: green;
+    font-weight: bold;
+}
+.game-stopped {
+    color: orange;
+}
+.game-new {
+    color: #009;
+}
