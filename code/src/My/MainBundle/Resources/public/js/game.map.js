@@ -15,7 +15,7 @@ $G = {
     stateUri: base_url + 'play/games/' + gameId + '/state',
     canvas: Raphael(document.getElementById('map-container', 600, 600)),
     zoom: 1,
-    refreshInterval: 5000,
+    refreshInterval: 10000,
     refreshCount: 0,
     bases: {},
     basesIndex: {},
@@ -23,6 +23,7 @@ $G = {
     fleets: {},
     fleetIcons: [],
     overlays: [],
+    detection: [],
 
     refresh: function() {
         $.ajax({
@@ -44,6 +45,7 @@ $G = {
                 $G.drawFleets();
 
                 $G.drawBaseOverlays();
+                $G.drawDetectionRanges();
 
                 $G.refreshCount++;
             }
@@ -134,19 +136,19 @@ $G = {
             }
 
             // Detection ring
-            if (base.player) {
-                $G.overlays.push($G.canvas
-                    .circle(x(base.x), y(base.y), base.detection)
-                    .attr({
-                        "stroke": base.player.color,
-                        "stroke-width": 1,
-                        "stroke-dasharray": "- ",
-                        "fill": base.player.color,
-                        "opacity": 0.075
-                    })
-                    .toBack()
-                );
-            }
+            // if (base.player) {
+            //     $G.overlays.push($G.canvas
+            //         .circle(x(base.x), y(base.y), base.detection)
+            //         .attr({
+            //             "stroke": base.player.color,
+            //             "stroke-width": 1,
+            //             "stroke-dasharray": "- ",
+            //             "fill": base.player.color,
+            //             "opacity": 0.075
+            //         })
+            //         .toBack()
+            //     );
+            // }
 
             // Clickable area
             $G.overlays.push($G.canvas
@@ -243,6 +245,49 @@ $G = {
 
             $("#game-panel").html(template(base));
         }
+    },
+
+    drawDetectionRanges: function() {
+        $.each($G.detection, function(i, d) { d.remove(); });
+        $G.detection.length = 0;
+
+        var players = {};
+        console.log("---");
+        $.each($G.bases, function(i, b) {
+            if (b.player.id) {
+                console.log(b.name);
+                if (!players[b.player.id]) players[b.player.id] = {player: b.player, bases: []};
+                players[b.player.id].bases.push(b);
+            }
+        });
+
+        $.each(players, function(i, p) {
+            var detection = $G.canvas.set();
+
+            $.each(p.bases, function(i, b) {
+                console.log(">"+b.name);
+                var range = $G.canvas.circle(x(b.x), y(b.y), b.detection);
+                detection.push(range);
+            });
+
+            var detection_path = $G.canvas.toPath(detection.items[0]);
+            for (i=1; i<detection.length; i++) {
+                var aux = $G.canvas.path(detection_path);
+                detection_path = $G.canvas.union(aux, detection.items[i]);
+                aux.remove();
+            }
+
+            detection.remove();
+
+            var newPath = $G.canvas.path(detection_path);
+            newPath.attr({
+                "strike-width": 0,
+                "fill": p.player.color,
+                "opacity": 0.1
+            }).toBack();
+
+            $G.detection.push(newPath);
+        });
     },
 
     clearBaseOverlays: function() {
