@@ -265,14 +265,14 @@ $G = {
             var detection = $G.canvas.set();
 
             $.each(p.bases, function(i, b) {
-                var range = $G.canvas.circle(x(b.x), y(b.y), b.detection-2);
+                var range = $G.canvas.circle(x(b.x), y(b.y), b.detection);
                 detection.push(range);
             });
 
             var detection_path = $G.canvas.toPath(detection.items[0]);
             for (i=1; i<detection.length; i++) {
                 var aux = $G.canvas.path(detection_path);
-                detection_path = $G.canvas.union(aux, detection.items[i]);
+                detection_path = $G.canvas.union(aux, detection.items[p.bases.length - i]);
                 aux.remove();
             }
 
