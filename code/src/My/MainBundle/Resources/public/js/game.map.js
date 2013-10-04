@@ -14,7 +14,6 @@ $G = {
     id: gameId,
     stateUri: base_url + 'play/games/' + gameId + '/state',
     canvas: Raphael(document.getElementById('map-container', 600, 700)),
-    zoom: 1,
     refreshInterval: 10000,
     refreshCount: 0,
     bases: {},
@@ -429,3 +428,32 @@ $("#game-panel").on('change', '.fleet-move', $G.fleetMove);
 // Get the ball rolling
 $G.refresh();
 window.setInterval($G.refresh, $G.refreshInterval);
+
+
+// Double click to zoom in on the map
+$("#map-container").on('dblclick', function(e) {
+    return resizeMapView(e, this, 100);
+});
+// Right click to zoom out on the map
+$("#map-container").on('mousedown', function(e) {
+    if (e.which == 3) return resizeMapView(e, this, -100);
+});
+$("#map-container").on('contextmenu', function(e) { return false; });
+
+
+function resizeMapView(e, el, step) {
+    e.preventDefault();
+    
+    var x = e.pageX - el.offsetLeft;
+    var y = e.pageY - el.offsetTop;
+
+    var w = $G.canvas.width - step;
+    var h = $G.canvas.height - step;
+
+    $G.canvas.width = w;
+    $G.canvas.height = h;
+
+    $G.canvas.setViewBox(x, y, w, h);
+
+    return false;
+}
