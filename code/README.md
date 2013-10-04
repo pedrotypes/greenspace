@@ -10,7 +10,7 @@ An incomplete clone of Neptune's Pride for private use.
 License
 -------
 
-Copyright (c) 2004-2013 Fabien Potencier
+Copyright (c) 2013 Pedro Gil Candeias
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
