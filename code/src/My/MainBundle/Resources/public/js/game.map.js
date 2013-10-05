@@ -14,6 +14,10 @@ $G = {
     id: gameId,
     stateUri: base_url + 'play/games/' + gameId + '/state',
     canvas: Raphael(document.getElementById('map-container', 600, 700)),
+    pan: {
+        x: 0,
+        y: 0
+    },
     refreshInterval: 10000,
     refreshCount: 0,
     bases: {},
@@ -432,28 +436,41 @@ window.setInterval($G.refresh, $G.refreshInterval);
 
 // Double click to zoom in on the map
 $("#map-container").on('dblclick', function(e) {
-    return resizeMapView(e, this, 100);
+    return resizeMapView(e, this, -100);
 });
 // Right click to zoom out on the map
 $("#map-container").on('mousedown', function(e) {
-    if (e.which == 3) return resizeMapView(e, this, -100);
+    if (e.which == 3) return resizeMapView(e, this, 100);
 });
 $("#map-container").on('contextmenu', function(e) { return false; });
 
 
 function resizeMapView(e, el, step) {
     e.preventDefault();
-    
-    var x = e.pageX - el.offsetLeft;
-    var y = e.pageY - el.offsetTop;
 
-    var w = $G.canvas.width - step;
-    var h = $G.canvas.height - step;
+    // Center canvas on click location
+    var w = $G.canvas.width;
+    var h = $G.canvas.height;
 
+    var clickX = e.pageX - el.offsetLeft;
+    var clickY = e.pageY - el.offsetTop;
+    var offsetX = $G.pan.x + clickX - w/2;
+    var offsetY = $G.pan.y + clickY - h/2;
+    $G.pan = {
+        x: offsetX,
+        y: offsetY
+    };
+
+    // Resize the canvas
+    offsetX = offsetX - step/2;
+    offsetY = offsetY - step/2;
+
+    w = w + step;
+    h = h + step;
     $G.canvas.width = w;
     $G.canvas.height = h;
 
-    $G.canvas.setViewBox(x, y, w, h);
+    $G.canvas.setViewBox(offsetX, offsetY, w, h, true);
 
     return false;
 }
