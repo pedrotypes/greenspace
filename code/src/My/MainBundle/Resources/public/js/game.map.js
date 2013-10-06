@@ -3,6 +3,8 @@ var ox = 50;
 var oy = 50;
 function x(n) { return ox + n; }
 function y(n) { return oy + n; }
+var map_w = 600;
+var map_h = 700;
 
 // Handlebars helpers
 Handlebars.registerHelper('basename', function(id) {
@@ -13,10 +15,12 @@ Handlebars.registerHelper('basename', function(id) {
 $G = {
     id: gameId,
     stateUri: base_url + 'play/games/' + gameId + '/state',
-    canvas: Raphael(document.getElementById('map-container', 600, 700)),
-    pan: {
+    canvas: Raphael(document.getElementById('map-container', map_w, map_h)),
+    viewBox: {
         x: 0,
-        y: 0
+        y: 0,
+        w: map_w,
+        h: map_h
     },
     refreshInterval: 10000,
     refreshCount: 0,
@@ -448,29 +452,24 @@ $("#map-container").on('contextmenu', function(e) { return false; });
 function resizeMapView(e, el, step) {
     e.preventDefault();
 
-    // Center canvas on click location
-    var w = $G.canvas.width;
-    var h = $G.canvas.height;
 
-    var clickX = e.pageX - el.offsetLeft;
-    var clickY = e.pageY - el.offsetTop;
-    var offsetX = $G.pan.x + clickX - w/2;
-    var offsetY = $G.pan.y + clickY - h/2;
-    $G.pan = {
-        x: offsetX,
-        y: offsetY
-    };
+    mapCenter(e.pageX - el.offsetLeft, e.pageY - el.offsetTop);
+    mapResize(step);
 
-    // Resize the canvas
-    offsetX = offsetX - step/2;
-    offsetY = offsetY - step/2;
-
-    w = w + step;
-    h = h + step;
-    $G.canvas.width = w;
-    $G.canvas.height = h;
-
-    $G.canvas.setViewBox(offsetX, offsetY, w, h, true);
+    $G.canvas.setViewBox($G.viewBox.x, $G.viewBox.y, $G.viewBox.w, $G.viewBox.h, true);
 
     return false;
+}
+
+// Center canvas on click location
+function mapCenter(x, y) {
+    $G.viewBox.x += x - $G.viewBox.w/2;
+    $G.viewBox.y += y - $G.viewBox.h/2;
+
+
+}
+
+// Resize the map, keeping the current center
+function mapResize(step) {
+
 }
