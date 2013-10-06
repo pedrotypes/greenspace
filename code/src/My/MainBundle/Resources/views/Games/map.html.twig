@@ -1,4 +1,7 @@
-{% extends 'MyMainBundle::layout.html.twig' %}
+{% extends 'MyMainBundle::layout_map.html.twig' %}
+
+{% block title %}{{ game.name }} | {{ parent() }}{% endblock %}
+{% block bodyClass %}body-map{% endblock %}
 
 {% block navbar %}
 <li>
@@ -21,13 +24,10 @@
         (+<span class="status-production"></span> /turn)
     </div>
 </div>
-<div class="map-wrapper">
-    <div id="map-container" class="map-container" style="
-        width: {{ map.width + 100}}px;
-        height: {{ map.width + 150}}px;
-    "></div>
 
-    <div id="game-panel" class="game-panel">&nbsp;</div>
+<div id="map-wrapper">
+    <div id="map-container" class="map-container"></div>
+    <div id="game-panel" class="game-panel" style="display: none;">&nbsp;</div>
 </div>
 
 {% endblock %}
@@ -135,6 +135,8 @@
     <script>
         var gameId = {{ game.id }};
         var playerId = {{ player.id }};
+        var canvasW = $(window).width();
+        var canvasH = $(window).height() - 30;
     </script>
     {% javascripts
         '@MyMainBundle/Resources/public/js/raphael-min.js'
