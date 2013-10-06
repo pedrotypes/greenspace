@@ -466,20 +466,26 @@ function mapResize(step) {
 var isDragging = false;
 $("#map-container")
     .mousedown(function(e) {
-        var origin = {
+        var lastPosition = {
             x: e.pageX - $G.container.offset().left,
             y: e.pageY - $G.container.offset().top
         };
-        var pan = {x: 0, y: 0};
 
         $(window).mousemove(function(e) {
             isDragging = true;
-            pan = {
-                x: e.pageX - $G.container.offset().left - origin.x,
-                y: e.pageY - $G.container.offset().top - origin.y
+
+            var pan = {
+                x: e.pageX - $G.container.offset().left - lastPosition.x,
+                y: e.pageY - $G.container.offset().top - lastPosition.y
             };
+            
             mapPan(pan.x * -1, pan.y * -1);
             $G.setViewBox();
+
+            lastPosition = {
+                x: e.pageX - $G.container.offset().left,
+                y: e.pageY - $G.container.offset().top
+            };
         });
     })
     .mouseup(function() {
