@@ -452,7 +452,6 @@ $("#map-container").on('contextmenu', function(e) { return false; });
 function resizeMapView(e, el, step) {
     e.preventDefault();
 
-
     mapCenter(e.pageX - el.offsetLeft, e.pageY - el.offsetTop);
     mapResize(step);
 
@@ -465,11 +464,12 @@ function resizeMapView(e, el, step) {
 function mapCenter(x, y) {
     $G.viewBox.x += x - $G.viewBox.w/2;
     $G.viewBox.y += y - $G.viewBox.h/2;
-
-
 }
 
 // Resize the map, keeping the current center
 function mapResize(step) {
-
+    $G.viewBox.x = $G.viewBox.x - step/2;
+    $G.viewBox.y = $G.viewBox.y - step/2;
+    $G.viewBox.w += step;
+    $G.viewBox.h += step;
 }
