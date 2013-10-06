@@ -16,13 +16,18 @@
 
 {% block content %}
 
-<div class="map-status" style="background: {{ player.color }}">
-    <div class="map-status-inner-wrapper" style="display: none">
+<div class="map-status">
+    <span>
+        <span class="playercolorsquare" style="background: {{ player.color }}"></span>
+        {{ user.name }}
+    </span>
+
+    <span class="map-status-inner-wrapper" style="display: none">
         <span class="status-bases"></span> bases |
         <span class="status-fleets"></span> fleets | 
         <span class="status-ships"></span> ships 
         (+<span class="status-production"></span> /turn)
-    </div>
+    </span>
 </div>
 
 <div id="map-wrapper">
