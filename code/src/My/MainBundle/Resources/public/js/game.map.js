@@ -15,6 +15,7 @@ Handlebars.registerHelper('basename', function(id) {
 $G = {
     id: gameId,
     stateUri: base_url + 'play/games/' + gameId + '/state',
+    container: $("#map-container"),
     canvas: Raphael(document.getElementById('map-container', map_w, map_h)),
     viewBox: {
         x: 0,
@@ -57,6 +58,10 @@ $G = {
                 $G.refreshCount++;
             }
         });
+    },
+
+    setViewBox: function() {
+        $G.canvas.setViewBox($G.viewBox.x, $G.viewBox.y, $G.viewBox.w, $G.viewBox.h, true);
     },
 
     updateStatusBar: function(state) {
@@ -451,8 +456,7 @@ function resizeMapView(e, el, step) {
 
     mapCenter(e.pageX - el.offsetLeft, e.pageY - el.offsetTop);
     mapResize(step);
-
-    $G.canvas.setViewBox($G.viewBox.x, $G.viewBox.y, $G.viewBox.w, $G.viewBox.h, true);
+    $G.setViewBox();
 
     return false;
 }
@@ -463,6 +467,12 @@ function mapCenter(x, y) {
     $G.viewBox.y += y - $G.viewBox.h/2;
 }
 
+// Pan the map by a few pixels
+function mapPan(x, y) {
+    $G.viewBox.x += x;
+    $G.viewBox.y += y;
+}
+
 // Resize the map, keeping the current center
 function mapResize(step) {
     $G.viewBox.x = $G.viewBox.x - step/2;
@@ -470,3 +480,31 @@ function mapResize(step) {
     $G.viewBox.w += step;
     $G.viewBox.h += step;
 }
+
+// Drag the map around
+// TODO: Fix the point that was clicked and move IT around
+// rather than just accelerating the map in a direction
+var isDragging = false;
+$("#map-container")
+    .mousedown(function(e) {
+        var origin = {
+            x: e.pageX - $G.container.offset().left,
+            y: e.pageY - $G.container.offset().top
+        };
+        var pan = {x: 0, y: 0};
+
+        $(window).mousemove(function(e) {
+            isDragging = true;
+            pan = {
+                x: e.pageX - $G.container.offset().left - origin.x,
+                y: e.pageY - $G.container.offset().top - origin.y
+            };
+            mapPan(pan.x * -1, pan.y * -1);
+            $G.setViewBox();
+        });
+    })
+    .mouseup(function() {
+        $(window).unbind("mousemove");
+        isDragging = !isDragging;
+    })
+;
