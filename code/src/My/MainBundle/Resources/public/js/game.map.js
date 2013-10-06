@@ -478,7 +478,7 @@ $("#map-container")
                 x: e.pageX - $G.container.offset().left - lastPosition.x,
                 y: e.pageY - $G.container.offset().top - lastPosition.y
             };
-            
+
             mapPan(pan.x * -1, pan.y * -1);
             $G.setViewBox();
 
@@ -514,10 +514,14 @@ $("#map-container").on('contextmenu', function(e) { return false; });
 
 // Window resize
 $(window).resize(function() {
-    $("#map.container").css({
-        'width': $(window).width() + 'px',
-        'height': $(window).height() - 30 + 'px'
-    });
+    var dimensions = {
+        width: $(window).width() + 'px',
+        height: $(window).height() - 30 + 'px'
+    };
+
+    $("html").attr(dimensions);
+    $("#map-container").attr(dimensions);
+    $("#map-container svg").attr(dimensions);
 });
 
 
