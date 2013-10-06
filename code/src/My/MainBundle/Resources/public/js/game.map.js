@@ -3,8 +3,8 @@ var ox = 50;
 var oy = 50;
 function x(n) { return ox + n; }
 function y(n) { return oy + n; }
-var map_w = 600;
-var map_h = 700;
+var map_w = canvasW;
+var map_h = canvasH;
 
 // Handlebars helpers
 Handlebars.registerHelper('basename', function(id) {
@@ -428,28 +428,7 @@ $G = {
 };
 
 
-// Events
-$("#map-refresh").on('click', function() { $G.refresh(); });
-$("#game-panel").on('click', '.control-fleet-create', function(e) { $G.fleetCreate(e); });
-$("#game-panel").on('change', '.fleet-check', $G.handleFleetCheck);
-$("#game-panel").on('click', '.fleet-station', $G.fleetStation);
-$("#game-panel").on('change', '.fleet-move', $G.fleetMove);
-
-// Get the ball rolling
-$G.refresh();
-window.setInterval($G.refresh, $G.refreshInterval);
-
-
-// Double click to zoom in on the map
-$("#map-container").on('dblclick', function(e) {
-    return resizeMapView(e, this, -100);
-});
-// Right click to zoom out on the map
-$("#map-container").on('mousedown', function(e) {
-    if (e.which == 3) return resizeMapView(e, this, 100);
-});
-$("#map-container").on('contextmenu', function(e) { return false; });
-
+// Aux functions
 
 function resizeMapView(e, el, step) {
     e.preventDefault();
@@ -508,3 +487,34 @@ $("#map-container")
         isDragging = !isDragging;
     })
 ;
+
+
+// Events
+$("#map-refresh").on('click', function() { $G.refresh(); });
+$("#game-panel").on('click', '.control-fleet-create', function(e) { $G.fleetCreate(e); });
+$("#game-panel").on('change', '.fleet-check', $G.handleFleetCheck);
+$("#game-panel").on('click', '.fleet-station', $G.fleetStation);
+$("#game-panel").on('change', '.fleet-move', $G.fleetMove);
+
+// Double click to zoom in on the map
+$("#map-container").on('dblclick', function(e) {
+    return resizeMapView(e, this, -100);
+});
+// Right click to zoom out on the map
+$("#map-container").on('mousedown', function(e) {
+    if (e.which == 3) return resizeMapView(e, this, 100);
+});
+$("#map-container").on('contextmenu', function(e) { return false; });
+
+// Window resize
+$(window).resize(function() {
+    $("#map.container").css({
+        'width': $(window).width() + 'px',
+        'height': $(window).height() - 30 + 'px'
+    });
+});
+
+
+// Get the ball rolling
+$G.refresh();
+window.setInterval($G.refresh, $G.refreshInterval);

@@ -1,0 +1,46 @@
+{% 
+    set user = app.security.getToken().getUser()
+%}<!DOCTYPE html>
+<html>
+  <head>
+    <title>{% block title %}Greenspace{% endblock %}</title>
+
+    <!-- Mobile -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <!-- iOS stuff -->
+    <!-- <link rel="apple-touch-icon" href="/img/icon.png"/>  -->
+    <!-- <link rel="apple-touch-startup-image" href="/img/splash.png" />   -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />  
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" /> 
+
+    {% block stylesheets %}
+        {% stylesheets
+            '@MyMainBundle/Resources/public/bootstrap/css/*'
+            '@MyMainBundle/Resources/public/css/*'
+            output='/compiled/css/main.css'
+        %}
+            <link rel="stylesheet" type="text/css" href="{{ asset_url }}" media="screen">
+        {% endstylesheets %}
+    {% endblock %}
+  </head>
+  <body class="{% block bodyClass %}{% endblock %}">
+    {% block content %}{% endblock %}
+
+    {% block javascripts %}
+        <script>
+            var base_url = '{{ path('homepage') }}';
+        </script>
+        
+        {% javascripts
+            '@MyMainBundle/Resources/public/js/jquery-1.10.2.js'
+            '@MyMainBundle/Resources/public/bootstrap/js/*'
+            output='/compiled/js/main.js'
+        %}
+            <script type="text/javascript" src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+    {% endblock %}
+
+    {% block jsTemplates %}{% endblock %}
+</body>
+</html>
