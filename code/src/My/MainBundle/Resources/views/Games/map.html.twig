@@ -22,11 +22,11 @@
         {{ user.name }}
     </span>
 
-    <span class="map-status-inner-wrapper" style="display: none">
-        <span class="status-bases"></span> bases |
-        <span class="status-fleets"></span> fleets | 
-        <span class="status-ships"></span> ships 
-        (+<span class="status-production"></span> /turn)
+    <span data-bind="with: status, visible: status.bases() > 0">
+        <span data-bind="text: bases"></span> bases |
+        <span data-bind="text: fleets"></span> fleets | 
+        <span data-bind="text: ships"></span> ships 
+        (+<span data-bind="text: production"></span> /turn)
     </span>
 </div>
 
@@ -145,12 +145,17 @@
     </script>
     {% javascripts
         '@MyMainBundle/Resources/public/js/raphael-min.js'
-        '@MyMainBundle/Resources/public/js/raphael.boolean.js'
-        '@MyMainBundle/Resources/public/js/moment.min.js'
-        '@MyMainBundle/Resources/public/js/handlebars.js'
+        '@MyMainBundle/Resources/public/js/knockout-2.3.0.js'
         '@MyMainBundle/Resources/public/js/game.map.js'
+        '@MyMainBundle/Resources/public/js/game.data.js'
         output='/compiled/js/game.js'
     %}
         <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
+
+    <script>
+        // Get the ball rolling
+        $G.refresh();
+        window.setInterval($G.refresh, $G.refreshInterval);
+    </script>
 {% endblock %}

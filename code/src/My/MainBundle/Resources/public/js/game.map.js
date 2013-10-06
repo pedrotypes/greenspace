@@ -6,11 +6,6 @@ function y(n) { return oy + n; }
 var map_w = canvasW;
 var map_h = canvasH;
 
-// Handlebars helpers
-Handlebars.registerHelper('basename', function(id) {
-    return $G.getBase(id).name;
-});
-
 // Game object
 $G = {
     id: gameId,
@@ -23,6 +18,7 @@ $G = {
         w: map_w,
         h: map_h
     },
+    state: null,
     refreshInterval: 10000,
     refreshCount: 0,
     bases: {},
@@ -43,7 +39,7 @@ $G = {
                 $.each($G.overlays, function(i, o) { o.remove(); });
                 $G.overlays.length = 0;
 
-                $G.updateStatusBar(state);
+                $G.updateStatusBar(state.status);
 
                 $G.bases = state.bases;
                 if ($G.refreshCount === 0) $G.drawBases();
@@ -64,12 +60,11 @@ $G = {
         $G.canvas.setViewBox($G.viewBox.x, $G.viewBox.y, $G.viewBox.w, $G.viewBox.h, true);
     },
 
-    updateStatusBar: function(state) {
-        $(".status-bases").html(state.status.bases);
-        $(".status-ships").html(state.status.ships);
-        $(".status-fleets").html(state.status.fleets);
-        $(".status-production").html(state.status.production);
-        $(".map-status-inner-wrapper").show();
+    updateStatusBar: function(data) {
+        $G.state.status.bases(data.bases);
+        $G.state.status.ships(data.ships);
+        $G.state.status.fleets(data.fleets);
+        $G.state.status.production(data.production);
     },
 
     drawBases: function() {
@@ -249,16 +244,6 @@ $G = {
         base.orbiting.push(fleet);
     },
 
-    basePanelTpl: null,
-    drawBasePanel: function(base) {
-        if (!$G.basePanelTpl) {
-            var source = $("#tpl-base-panel").html();
-            var template = Handlebars.compile(source);
-
-            $("#game-panel").html(template(base));
-        }
-    },
-
     drawDetectionRanges: function() {
         $.each($G.detection, function(i, d) { d.remove(); });
         $G.detection.length = 0;
@@ -332,31 +317,11 @@ $G = {
         $G.clearBaseOverlays();
 
         var base = $G.getBase(baseId);
-        $G.drawBasePanel(base);
         $G.drawFleetRange(base);
     },
 
 
-    // Fleet controls
-
-    getSelectedFleets: function() {
-        var fleets = [];
-        var checkboxes = $("#game-panel .fleet-check:checked");
-        $.each(checkboxes, function(i, c) {
-            fleets.push(c.value);
-        });
-
-        return fleets;
-    },
-
-    handleFleetCheck: function() {
-        var checked = $G.getSelectedFleets();
-        var fleetcontrol = $(".fleet-control");
-
-        if (checked.length > 0) fleetcontrol.show();
-        else fleetcontrol.hide();
-    },
-
+    
 
     // Commands
 
@@ -523,8 +488,3 @@ $(window).resize(function() {
     $("#map-container").attr(dimensions);
     $("#map-container svg").attr(dimensions);
 });
-
-
-// Get the ball rolling
-$G.refresh();
-window.setInterval($G.refresh, $G.refreshInterval);
