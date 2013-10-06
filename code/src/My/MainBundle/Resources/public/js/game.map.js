@@ -196,9 +196,6 @@ $G = {
                 var origin = $G.getBase(fleet.origin);
                 var destination = $G.getBase(fleet.destination);
 
-                var eta = moment(fleet.timeLeft, "s");
-                fleet.eta = eta.format('mm:ss');
-
                 $G.addInbound(fleet.destination, fleet);
                 
                 var pathString = "M"
