@@ -395,7 +395,7 @@ $G = {
 function resizeMapView(e, el, step) {
     e.preventDefault();
 
-    mapCenter(e.pageX - el.offsetLeft, e.pageY - el.offsetTop);
+    // mapCenter(e.pageX - el.offsetLeft, e.pageY - el.offsetTop);
     mapResize(step);
     $G.setViewBox();
 
