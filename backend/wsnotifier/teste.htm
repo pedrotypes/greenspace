@@ -1,0 +1,106 @@
+<html>
+    <head>
+        <script type="text/javascript" src="./moment.min.js"></script>
+    </head>
+<body>
+
+<form id="form" action="#">
+    <input type="text" id="msg" placeholder="msg to send" />
+    <input type="submit" value="go go gadget!" />
+</form>
+<div id="messages_1" style="height:100px;background:black;color:white;margin-bottom: 0.5em;overflow:auto"></div>
+<div id="messages_2" style="height:100px;background:black;color:white;overflow:auto"></div>
+
+<script type='text/javascript'>
+function WSClient(game_id, player_id) {
+
+    this.game_id = game_id;
+    this.player_id = player_id;
+    this.ws;
+    this.container;
+
+    if ("WebSocket" in window) {
+        this.ws = new WebSocket("ws://localhost:8888/ws");
+        this.ws.player = {"game_id": this.game_id, "player_id": this.player_id};
+
+        // ugly hack
+        var self = this;
+
+        var ws = this.ws;
+
+        ws.onmessage = function (evt) {
+            var msg = JSON.parse(evt.data);
+            if (msg.command in self) {
+                self[msg.command](msg);
+            } else {
+                console.log("Warning: "+msg.command+" method is not defined!");
+            }
+            if (this.container !== undefined) {
+                var received_msg = evt.data;
+                this.container.innerHTML = received_msg + "<br />" + this.container.innerHTML;
+            }
+        };
+        ws.onclose = function() {
+            if (this.container !== undefined) {
+                this.container.innerHTML = received_msg + "Connection Closed.<br />" + this.container.innerHTML;
+            }
+        };
+
+    } else {
+        console.log("WebSocket NOT supported by your Browser! :(");
+    }
+
+    return this;
+}
+
+WSClient.prototype.setContainer = function(container) {
+    this.container = container;
+}
+
+WSClient.prototype.sendMsg = function(msg) {
+    if(this.ws.readyState == 1) {
+        this.ws.send(msg);
+    }
+}
+
+WSClient.prototype.identify = function(msg) {
+    this.ws.send(JSON.stringify({
+        "command": "whoami",
+        "player": this.ws.player
+    }));
+}
+
+WSClient.prototype.print = function(msg) {
+    if (this.container !== undefined) {
+        var date = moment.unix(msg.timestamp)
+        msg.message = date.format('YYYY-MM-DD HH:mm:ss') + " > " + msg.message;
+        this.container.innerHTML = "" + msg.message + "<br />" + this.container.innerHTML;
+    }
+}
+
+WSClient.prototype.multiprint = function(msg) {
+    var len = msg.msgs.length;
+    for(var i=0; i<len; i++) {
+        this.print(msg.msgs[i]);
+    }
+}
+
+
+window.ws1 = new WSClient(2, 'cl1');
+ws1.setContainer(document.getElementById('messages_1'));
+
+window.ws2 = new WSClient(2, 'cl2');
+ws2.setContainer(document.getElementById('messages_2'));
+
+window.ws_send = new WSClient(0, 'server');
+
+window.form.onsubmit = function(evt) {
+    evt.preventDefault();
+    ws_send.sendMsg(window.msg.value);
+    window.msg.value = "";
+};
+
+</script>
+
+</body>
+</html>
