@@ -1,2 +1,3 @@
 .DS_Store
 *.sql
+backend/wsnotifier/lib/tornado/platform/kqueue.pyc
