@@ -28,16 +28,17 @@ body {
     height: 100%;
 }
 
-.game-panel {
-    float: right;
-    margin-right: 40px;
-    width: 330px;
-    height: 550px;
-    color: #bbb;
+#game-panel {
     position: absolute;
+    top: 1em;
+    right: 1em;
+    display: inline-block;
+    color: #bbb;
     z-index: 9;
+    background: #111;
+    padding: 0.5em 1em;
 }
-.game-panel h2 {
+#game-panel h2 {
     color: #ddd;
 }
 

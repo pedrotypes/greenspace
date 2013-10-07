@@ -61,10 +61,7 @@ $G = {
     },
 
     updateStatusBar: function(data) {
-        $G.state.status.bases(data.bases);
-        $G.state.status.ships(data.ships);
-        $G.state.status.fleets(data.fleets);
-        $G.state.status.production(data.production);
+        $G.state.status(data);
     },
 
     drawBases: function() {
@@ -318,10 +315,10 @@ $G = {
 
         var base = $G.getBase(baseId);
         $G.drawFleetRange(base);
+
+        $G.state.goToBase(base);
     },
 
-
-    
 
     // Commands
 

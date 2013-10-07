@@ -1,0 +1,21 @@
+<div
+    id="game-panel"
+    data-bind="with: selectedBase, visible: selectedBase"
+    style="display: none"
+>
+    <a href='javascript:void(0)' data-bind="click: $root.clearBase">x</a>
+
+    <h2 class='base-name' data-bind="text: name, attr: {style: 'color: '+player.color}"></h2>
+    <p class='lead player-name' data-bind="text: player.name, attr: {style: 'color: '+player.color}"></p>
+
+    <hr>
+    <p>
+        Resources: <span data-bind="text: resources"></span><br>
+        Production: <span data-bind="text: production"></span>
+    </p>
+    <p>
+        Total ships: <span data-bind="text: totalPower"></span>
+        <br>Garrisoned ships: <span data-bind="text: power"></span>
+    </p>
+
+</div>
