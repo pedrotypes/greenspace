@@ -1,0 +1,132 @@
+<html>
+    <head>
+        <script type="text/javascript" src="./moment.min.js"></script>
+    </head>
+<body>
+
+<div style="width:33%; float: left;">
+<h4>Game 2, Player 5</h4>
+<div id="messages_1" style="height:100px;background:black;color:white;margin: 0.5em;overflow:auto"></div>
+</div>
+
+<div style="width:33%; float: left;">
+<h4>Game 2, Player 60</h4>
+<div id="messages_2" style="height:100px;background:black;color:white;margin: 0.5em;overflow:auto"></div>
+</div>
+
+<div style="width:33%; float: left;">
+<h4>Game 2, Player 0 (Invalid)</h4>
+<div id="messages_3" style="height:100px;background:black;color:white;margin: 0.5em;overflow:auto"></div>
+</div>
+
+<div style="width:33%; float: left;">
+<h4>Game 5, Player 5</h4>
+<div id="messages_4" style="height:100px;background:black;color:white;margin: 0.5em;overflow:auto"></div>
+</div>
+
+<div style="width:33%; float: left;">
+<h4>Game 5, Player 60</h4>
+<div id="messages_5" style="height:100px;background:black;color:white;margin: 0.5em;overflow:auto"></div>
+</div>
+
+
+
+<script type='text/javascript'>
+function WSClient(game_id, player_id, player_hmac) {
+
+    this.game_id = game_id;
+    this.player_id = player_id;
+    this.player_hmac = player_hmac;
+    this.ws;
+    this.container;
+
+    if ("WebSocket" in window) {
+        this.ws = new WebSocket("ws://localhost:8888/ws");
+        this.ws.player = {
+            "game_id": this.game_id,
+            "player_id": this.player_id,
+            "hmac": this.player_hmac
+        };
+
+        // ugly hack
+        var self = this;
+
+        var ws = this.ws;
+
+        ws.onmessage = function (evt) {
+            var msg = JSON.parse(evt.data);
+            if (msg.command in self) {
+                self[msg.command](msg);
+            } else {
+                console.log("Warning: "+msg.command+" method is not defined!");
+            }
+            if (this.container !== undefined) {
+                var received_msg = evt.data;
+                this.container.innerHTML = received_msg + "<br />" + this.container.innerHTML;
+            }
+        };
+        ws.onclose = function() {
+            if (this.container !== undefined) {
+                this.container.innerHTML = received_msg + "Connection Closed.<br />" + this.container.innerHTML;
+            }
+        };
+
+    } else {
+        console.log("WebSocket NOT supported by your Browser! :(");
+    }
+
+    return this;
+}
+
+WSClient.prototype.setContainer = function(container) {
+    this.container = container;
+}
+
+WSClient.prototype.sendMsg = function(msg) {
+    if(this.ws.readyState == 1) {
+        this.ws.send(msg);
+    }
+}
+
+WSClient.prototype.identify = function(msg) {
+    this.ws.send(JSON.stringify({
+        "command": "whoami",
+        "player": this.ws.player
+    }));
+}
+
+WSClient.prototype.print = function(msg) {
+    if (this.container !== undefined) {
+        var date = moment.unix(msg.timestamp)
+        msg.message = date.format('YYYY-MM-DD HH:mm:ss') + " > " + msg.message;
+        this.container.innerHTML = "" + msg.message + "<br />" + this.container.innerHTML;
+    }
+}
+
+WSClient.prototype.multiprint = function(msg) {
+    var len = msg.msgs.length;
+    for(var i=0; i<len; i++) {
+        this.print(msg.msgs[i]);
+    }
+}
+
+
+window.ws1 = new WSClient(2, 5, "4db2fc68f112251ac8b7bd0f0a097320b79feaa5");
+ws1.setContainer(document.getElementById('messages_1'));
+
+window.ws2 = new WSClient(2, 60, "cbb233d4830753ec3d2d2e37ff29f28fb0f94161");
+ws2.setContainer(document.getElementById('messages_2'));
+
+window.ws3 = new WSClient(2, 0, "Leet Hacker");
+ws3.setContainer(document.getElementById('messages_3'));
+
+window.ws4 = new WSClient(5, 5, "0a53bb7ab024dea3f619c69a448e88a3aff24b12");
+ws4.setContainer(document.getElementById('messages_4'));
+
+window.ws5 = new WSClient(5, 60, "f111ee52504a407821771a614a83935360919690");
+ws5.setContainer(document.getElementById('messages_5'));
+
+</script>
+
+</body>
+</html>
