@@ -12,6 +12,13 @@ ko.bindingHandlers.playerColor = {
 
 // Models
 
+function GameStatus(data) {
+    this.bases = ko.observable(data.bases);
+    this.ships = ko.observable(data.ships);
+    this.fleets = ko.observable(data.fleets);
+    this.production = ko.observable(data.production);
+}
+
 function Player(data) {
     this.id = ko.observable(data.id);
     this.name = ko.observable(data.name);
@@ -126,19 +133,17 @@ function MapViewModel() {
     var self = this;
     
     // Own player
-    self.player = ko.observable(new Player(myPlayer));
+    self.player = ko.observable(new Player({
+        id: 1,
+        name: 'Candeias',
+        color: '#f00'
+    }));
     // Neutral player
     self.neutral = new Player({id: 0, name: 'Neutral', color: '#777'});
 
     self.status = ko.observable();
     self.bases = ko.observableArray([]);
     self.fleets = ko.observableArray([]);
-    self.selectedBase = ko.observable();
-
-    self.goToBase = function(id) {
-        self.selectedBase(self.getBase(id));
-        console.log(id);
-    };
 
     self.getBase = function(id) { return self.find(id, self.bases()); };
     self.getFleet = function(id) { return self.find(id, self.fleets()); };
@@ -149,9 +154,9 @@ function MapViewModel() {
     };
 
     self.loadBases = function(bases) {
-        for (var i=0; i<bases.length; i++) {
-            var data = bases[i];
-            var b = self.getBase(data.id);
+        for (var i=0; i<rawData.bases.length; i++) {
+            var data = rawData.bases[i];
+            var b = map.getBase(data.id);
             if (b) {
                 b
                     .id(data.id)
@@ -160,24 +165,24 @@ function MapViewModel() {
                 ;
             } else {
                 var p = data.player ? new Player(data.player) : map.neutral;
-                b = new Base(self)
+                b = new Base(map)
                     .id(data.id)
                     .name(data.name)
                     .power(data.power)
                     .player(p)
                     .inFleetRange(data.inFleetRange)
                 ;
-                self.bases.push(b);
+                map.bases.push(b);
             }
         }
     };
     self.loadFleets = function(fleets) {
-        for (var i=0; i<fleets.length; i++) {
-            var data = fleets[i];
-            var f = self.getFleet(data.id);
-            var b = self.getBase(data.base);
-            var o = self.getBase(data.origin);
-            var d = self.getBase(data.destination);
+        for (var i=0; i<rawData.fleets.length; i++) {
+            var data = rawData.fleets[i];
+            var f = map.getFleet(data.id);
+            var b = map.getBase(data.base);
+            var o = map.getBase(data.origin);
+            var d = map.getBase(data.destination);
 
             if (f) {
                 f
@@ -189,7 +194,7 @@ function MapViewModel() {
                 ;
             } else {
                 var p = data.player ? new Player(data.player) : map.neutral;
-                self.fleets.push(new Fleet()
+                map.fleets.push(new Fleet()
                     .id(data.id)
                     .base(b)
                     .origin(o)
@@ -204,5 +209,50 @@ function MapViewModel() {
 
 
 // Get the ball rolling
-$G.state = new MapViewModel();
-ko.applyBindings($G.state);
+
+var map = new MapViewModel();
+ko.applyBindings(map);
+
+
+// Simulate initial state load
+var rawPlayers = [
+    {id: 0, name: 'Neutral', color: '#777'},
+    {id: 1, name: 'Candeias', color: '#f00'},
+    {id: 2, name: 'Starman', color: '#00f'}
+];
+var rawData = {
+    status: {
+        bases: 34,
+        ships: 998,
+        fleets: 47,
+        production: 501
+    },
+    bases: [
+        {id: 1, name: 'Alpha Centauri', player: rawPlayers[1], power: 15, inFleetRange: [
+            {id: 2, name: 'Procyon', distance: 30},
+            {id: 3, name: 'Polaris', distance: 90}
+        ]},
+        {id: 2, name: 'Procyon', player: rawPlayers[2], power: 25, inFleetRange: [
+            {id: 3, name: 'Polaris', distance: 80}
+        ]},
+        {id: 3, name: 'Polaris', player: null, power: 0, inFleetRange: [
+            {id: 3, name: 'Polaris', distance: 70}
+        ]},
+        {id: 4, name: 'Vega', player: null, power: 0, inFleetRange: [
+            {id: 3, name: 'Polaris', distance: 60}
+        ]},
+    ],
+    fleets: [
+        {id: 1, player: rawPlayers[1], power: 11, base: 1, origin: 1, destination: 2},
+        {id: 2, player: rawPlayers[1], power: 22, base: 1},
+        {id: 3, player: rawPlayers[1], power: 55, base: 2},
+        {id: 4, player: rawPlayers[2], power: 33, base: 2},
+        {id: 5, player: rawPlayers[1], power: 44, base: null, origin: 1, destination: 2},
+    ]
+};
+
+map.status(rawData.status);
+// Load bases
+map.loadBases(rawData.bases);
+// Load fleets
+map.loadFleets(rawData.fleets);

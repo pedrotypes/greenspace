@@ -14,6 +14,7 @@ body {
 
 #map-wrapper {
     background: #111911;
+    /*background: url('/img/bg_nebula.jpg');*/
     overflow: hidden;
     position: relative;
     width: 100%;
@@ -64,6 +65,10 @@ body {
 
 .fleets-list label {
     font-weight: normal;
+}
+
+.fleet-create {
+    display: inline-block;
 }
 
 .map-status {

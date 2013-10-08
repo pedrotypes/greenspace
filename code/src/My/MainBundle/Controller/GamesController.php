@@ -50,13 +50,8 @@ class GamesController extends Controller
 
     public function mapAction(Game $game)
     {
-        $map = $game->getMap();
-        $bases = $map->getBases();
-        
         return $this->render('MyMainBundle:Games:map.html.twig', [
             'game'  => $game,
-            'map'   => $map,
-            'bases' => $bases,
             'player' => $game->getPlayerForUser($this->getUser()),
         ]);
     }

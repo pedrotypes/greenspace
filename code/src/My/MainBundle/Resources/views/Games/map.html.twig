@@ -140,6 +140,11 @@
     <script>
         var gameId = {{ game.id }};
         var playerId = {{ player.id }};
+        var myPlayer = {
+            id: {{ player.id }},
+            name: '{{ user.name }}',
+            color: '{{ player.color }}'
+        };
         var canvasW = $(window).width();
         var canvasH = $(window).height() - 30;
     </script>

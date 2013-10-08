@@ -2,20 +2,73 @@
     id="game-panel"
     data-bind="with: selectedBase, visible: selectedBase"
     style="display: none"
+    class="col-lg-3"
 >
-    <a href='javascript:void(0)' data-bind="click: $root.clearBase">x</a>
 
-    <h2 class='base-name' data-bind="text: name, attr: {style: 'color: '+player.color}"></h2>
-    <p class='lead player-name' data-bind="text: player.name, attr: {style: 'color: '+player.color}"></p>
+    <h1 data-bind="playerColor: player()">
+        <span data-bind="text: name"></span>
+        <small data-bind="text: player().name"></small>
+    </h1>
+    
 
-    <hr>
-    <p>
-        Resources: <span data-bind="text: resources"></span><br>
-        Production: <span data-bind="text: production"></span>
-    </p>
-    <p>
-        Total ships: <span data-bind="text: totalPower"></span>
-        <br>Garrisoned ships: <span data-bind="text: power"></span>
-    </p>
+    <!-- ko if: fleets().length > 0 -->
+    <p>Orbiting:</p>
+    <ul class="list-unstyled">
+        <!-- ko foreach: ownFleets() -->
+        <li data-bind="playerColor: player()">
+            <label>
+                <input type="checkbox" data-bind="value: id, checked: $parent.fleetCommand.fleets">
+                <span data-bind="text: power"></span> ships
+                (<span data-bind="text: player().name"></span>)
+                <!-- ko if: destination() -->
+                moving to <span data-bind="text: destination().name"></span>
+                <!-- /ko -->
+            </label>
+        </li>
+        <!-- /ko -->
+
+        <!-- ko if: fleetCommand.fleets().length > 0 -->
+        <li class='fleet-commands'>
+            <button type="button" data-bind="click: fleetCommand.garrison">
+                garrison
+            </button>
+
+            <button type="button" data-bind="click: fleetCommand.abort">
+                abort jump
+            </button>
+
+            <!-- ko foreach: inFleetRange() -->
+                <br><button type="button" data-bind="
+                    text: 'Move to ' + name + '(' + distance + ')',
+                    click: $parent.fleetCommand.move
+                "></button>
+            <!-- /ko -->
+        </li>
+        <!-- /ko -->
+
+        <!-- ko foreach: otherFleets() -->
+        <li data-bind="playerColor: player()">
+            <span data-bind="text: power"></span> ships
+            (<span data-bind="text: player().name"></span>)
+            <!-- ko if: destination() -->
+            moving to <span data-bind="text: destination().name"></span>
+            <!-- /ko -->
+        </li>
+        <!-- /ko -->
+    </ul>
+    <!-- /ko -->
+
+    <!-- ko if: inbound().length > 0 -->
+    <p>Inbound:</p>
+    <ul class="list-unstyled" data-bind="foreach: inbound">
+        <!-- ko if: origin() -->
+        <li data-bind="playerColor: player()">
+            <span data-bind="text: power"></span> ships
+            (<span data-bind="text: player().name"></span>)
+            from <span data-bind="text: origin().name"></span>
+        </li>
+        <!-- /ko -->
+    </ul>
+    <!-- /ko -->
 
 </div>

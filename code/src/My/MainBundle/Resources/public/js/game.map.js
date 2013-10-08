@@ -39,7 +39,9 @@ $G = {
                 $.each($G.overlays, function(i, o) { o.remove(); });
                 $G.overlays.length = 0;
 
-                $G.updateStatusBar(state.status);
+                $G.state.status(state.status);
+                $G.state.loadBases(state.bases);
+                $G.state.loadFleets(state.fleets);
 
                 $G.bases = state.bases;
                 if ($G.refreshCount === 0) $G.drawBases();
@@ -58,10 +60,6 @@ $G = {
 
     setViewBox: function() {
         $G.canvas.setViewBox($G.viewBox.x, $G.viewBox.y, $G.viewBox.w, $G.viewBox.h, true);
-    },
-
-    updateStatusBar: function(data) {
-        $G.state.status(data);
     },
 
     drawBases: function() {
@@ -316,7 +314,7 @@ $G = {
         var base = $G.getBase(baseId);
         $G.drawFleetRange(base);
 
-        $G.state.goToBase(base);
+        $G.state.goToBase(baseId);
     },
 
 
@@ -459,10 +457,10 @@ $("#map-container")
 
 // Events
 $("#map-refresh").on('click', function() { $G.refresh(); });
-$("#game-panel").on('click', '.control-fleet-create', function(e) { $G.fleetCreate(e); });
-$("#game-panel").on('change', '.fleet-check', $G.handleFleetCheck);
-$("#game-panel").on('click', '.fleet-station', $G.fleetStation);
-$("#game-panel").on('change', '.fleet-move', $G.fleetMove);
+// $("#game-panel").on('click', '.control-fleet-create', function(e) { $G.fleetCreate(e); });
+// $("#game-panel").on('change', '.fleet-check', $G.handleFleetCheck);
+// $("#game-panel").on('click', '.fleet-station', $G.fleetStation);
+// $("#game-panel").on('change', '.fleet-move', $G.fleetMove);
 
 // Double click to zoom in on the map
 $("#map-container").on('dblclick', function(e) {
