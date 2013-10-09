@@ -19,7 +19,7 @@ $G = {
         h: map_h
     },
     state: null,
-    refreshInterval: 10000,
+    refreshInterval: 2500,
     refreshCount: 0,
     bases: {},
     basesIndex: {},
@@ -41,14 +41,19 @@ $G = {
 
                 $G.state.status(state.status);
                 $G.state.loadBases(state.bases);
-                $G.state.loadFleets(state.fleets);
 
                 $G.bases = state.bases;
                 if ($G.refreshCount === 0) $G.drawBases();
+
+                var oldFleets = $.map($G.state.fleets(), function(f) { return f.id(); });
+                $G.state.loadFleets(state.fleets);
+                // var serverFleets = $.map(state.fleets, function(f) { return f.id; });
+                // $.each(oldFleets, function(i, f) {
+                //     if ($.inArray(f, serverFleets) == -1)
+                //         $G.state.getFleet(f).remove();
+                // });
+
                 
-                $G.fleets = state.fleets;
-                $G.clearBaseInbound();
-                $G.drawFleets();
 
                 $G.drawBaseOverlays();
                 // $G.drawDetectionRanges();
@@ -176,54 +181,6 @@ $G = {
             if (base.inbound) {
                 base.inbound.length = 0;
             }
-        });
-    },
-
-    drawFleets: function() {
-        $.each($G.fleetIcons, function(i, icon) {
-            icon.remove();
-        });
-        $G.fleetIcons.length = 0;
-
-        $.each($G.fleets, function(i, fleet) {
-            // Draw moving fleet path
-            if (fleet.isMoving) {
-                var origin = $G.getBase(fleet.origin);
-                var destination = $G.getBase(fleet.destination);
-
-                $G.addInbound(fleet.destination, fleet);
-                
-                var pathString = "M"
-                    + x(origin.x) + "," + y(origin.y)
-                    + "L" + x(destination.x) + "," + y(destination.y)
-                ;
-
-                var path = $G.canvas
-                    .path(pathString)
-                    .attr({
-                        "stroke": fleet.player.color,
-                        "stroke-width": 1
-                    })
-                    .toBack()
-                ;
-                $G.overlays.push(path);
-            }
-
-            // Report parked fleets
-            if (fleet.base) {
-                $G.addOrbiting(fleet.base, fleet);
-            }
-
-            // Draw the fleet itself
-            var icon = $G.canvas
-                .circle(x(fleet.coords.x), y(fleet.coords.y), 3)
-                .attr({
-                    "fill": fleet.player.color
-                })
-            ;
-
-
-            $G.overlays.push(icon);
         });
     },
 

@@ -24,6 +24,8 @@ function Base(map) {
     self.id = ko.observable();
     self.player = ko.observable();
     self.map = ko.observable(map);
+    self.x = ko.observable();
+    self.y = ko.observable();
     self.name = ko.observable();
     self.power = ko.observable();
     self.resources = ko.observable();
@@ -79,17 +81,78 @@ function Base(map) {
     };
 }
 
-function Fleet() {
-    this.id = ko.observable();
-    this.player = ko.observable();
-    this.base = ko.observable();
-    this.origin = ko.observable();
-    this.destination = ko.observable();
-    this.power = ko.observable();
+function Fleet(map) {
+    var self = this;
 
-    this.belongsTo = function(player) { return this.player().id() == player.id(); };
-    this.isAt = function(base) { return this.base() && this.base().id() == base.id(); };
-    this.isInboundTo = function(base) { return this.destination() && this.destination().id() == base.id(); };
+    self.id = ko.observable();
+    self.map = ko.observable(map);
+    self.coords = ko.observable();
+    self.player = ko.observable();
+    self.base = ko.observable();
+    self.origin = ko.observable();
+    self.destination = ko.observable();
+    self.power = ko.observable();
+
+    self.canvas = $G.canvas; // TODO: break this coupling
+
+    self.pathObject = null;
+    self.path = ko.computed(function() {
+        var origin = self.origin();
+        var destination = self.destination();
+
+        if (origin && destination) {    
+            var pathString = "M"
+                + x(origin.x()) + "," + y(origin.y())
+                + "L" + x(destination.x()) + "," + y(destination.y())
+            ;
+
+            if (!self.pathObject) {
+                self.pathObject = self.canvas
+                    .path(pathString)
+                    .attr({
+                        "stroke": self.player().color(),
+                        "stroke-width": 1
+                    })
+                    .toBack()
+                ;
+            } else {
+                self.pathObject
+                    .attr("path", pathString)
+                    .toBack()
+                ;
+            }
+        }
+    });
+
+    self.iconObject = null;
+    self.icon = ko.computed(function() {
+        if (!self.coords()) return;
+
+        if (self.iconObject) {
+            self.iconObject.attr({cx: x(self.coords().x), cy: y(self.coords().y)});
+
+        } else {
+            self.iconObject = self.canvas
+                .circle(x(self.coords().x), y(self.coords().y), 3)
+                .attr({
+                    "fill": self.player().color()
+                })
+                .toFront()
+            ;
+        }
+    });
+
+    self.belongsTo = function(player) { return self.player().id() == player.id(); };
+    self.isAt = function(base) { return self.base() && self.base().id() == base.id(); };
+    self.isInboundTo = function(base) { return self.destination() && self.destination().id() == base.id(); };
+
+    self.remove = function() {
+        console.log('F' + self.id() + ' removed');
+        if (self.pathObject) self.pathObject.remove();
+        if (self.iconObject) self.iconObject.remove();
+
+        self.map().fleets.remove(self);
+    };
 }
 
 function FleetCommand(base) {
@@ -108,8 +171,9 @@ function FleetCommand(base) {
         $.each(self.fleets(), function(i, f) {
             var fleet = self.map().getFleet(f);
             self.baseObject.addPower(fleet.power());
-            self.map().fleets.remove(fleet);
             fleetData.push('fleet[]='+f);
+
+            fleet.remove();
         });
 
         $.ajax({
@@ -121,6 +185,8 @@ function FleetCommand(base) {
                 alert('Sorry, unable to garrison fleets at this time');
             }
         });
+
+        self.fleets.removeAll();
     };
     self.abort = function() {
         var fleetData = ['destination='+self.base()];
@@ -142,6 +208,8 @@ function FleetCommand(base) {
                 alert('Sorry, unable to abort jump at this time');
             }
         });
+
+        self.fleets.removeAll();
     };
     self.move = function(destination) {
         self.destination(destination.id);
@@ -165,7 +233,6 @@ function FleetCommand(base) {
                 ;
             }
         });
-        self.fleets.removeAll();
 
         $.ajax({
             url: base_url + 'play/commands/movefleets/' + gameId,
@@ -176,6 +243,8 @@ function FleetCommand(base) {
                 alert('Sorry, unable to move fleets at this time');
             }
         });
+
+        self.fleets.removeAll();
     };
     self.create = function() {
         var power = self.power();
@@ -233,6 +302,7 @@ function MapViewModel() {
             if (b) {
                 b
                     .id(data.id)
+                    .x(data.x).y(data.y)
                     .name(data.name)
                     .power(data.power)
                     .resources(data.resources)
@@ -242,6 +312,7 @@ function MapViewModel() {
                 var p = data.player ? new Player(data.player) : map.neutral;
                 b = new Base(self)
                     .id(data.id)
+                    .x(data.x).y(data.y)
                     .name(data.name)
                     .power(data.power)
                     .resources(data.resources)
@@ -260,10 +331,10 @@ function MapViewModel() {
             var b = self.getBase(data.base);
             var o = self.getBase(data.origin);
             var d = self.getBase(data.destination);
-
             if (f) {
                 f
                     .id(data.id)
+                    .coords(data.coords)
                     .base(b)
                     .origin(o)
                     .destination(d)
@@ -271,13 +342,14 @@ function MapViewModel() {
                 ;
             } else {
                 var p = data.player ? new Player(data.player) : map.neutral;
-                self.fleets.push(new Fleet()
+                self.fleets.push(new Fleet(self)
                     .id(data.id)
+                    .player(p)
+                    .coords(data.coords)
                     .base(b)
                     .origin(o)
                     .destination(d)
                     .power(data.power)
-                    .player(p)
                 );
             }
         }
