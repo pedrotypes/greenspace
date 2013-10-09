@@ -14,6 +14,7 @@ body {
 
 #map-wrapper {
     background: #111911;
+    /*background: url('/img/bg_nebula.jpg');*/
     overflow: hidden;
     position: relative;
     width: 100%;
@@ -28,17 +29,23 @@ body {
     height: 100%;
 }
 
-.game-panel {
-    float: right;
-    margin-right: 40px;
-    width: 330px;
-    height: 550px;
-    color: #bbb;
+#game-panel {
     position: absolute;
+    top: 1em;
+    right: 1em;
+    display: inline-block;
+    color: #bbb;
     z-index: 9;
+    background: #111;
+    padding: 0.5em 1em;
 }
-.game-panel h2 {
-    color: #ddd;
+
+#game-panel h1 {
+    margin-bottom: 1em;
+}
+#game-panel h1 small {
+    display: block;
+    font-size: 0.5em;
 }
 
 .lobby-players {
@@ -63,6 +70,14 @@ body {
 
 .fleets-list label {
     font-weight: normal;
+}
+
+.fleet-create {
+    display: inline-block;
+}
+
+.fleet-commands .btn {
+    margin-bottom: 0.2em;
 }
 
 .map-status {

@@ -22,7 +22,7 @@
         {{ user.name }}
     </span>
 
-    <span data-bind="with: status, visible: status.bases() > 0">
+    <span data-bind="with: status, visible: status()" style="display: none">
         <span data-bind="text: bases"></span> bases |
         <span data-bind="text: fleets"></span> fleets | 
         <span data-bind="text: ships"></span> ships 
@@ -32,7 +32,7 @@
 
 <div id="map-wrapper">
     <div id="map-container" class="map-container"></div>
-    <div id="game-panel" class="game-panel" style="display: none;">&nbsp;</div>
+    {% include 'MyMainBundle:Games:_base_panel.html.twig' %}
 </div>
 
 {% endblock %}
@@ -140,6 +140,11 @@
     <script>
         var gameId = {{ game.id }};
         var playerId = {{ player.id }};
+        var myPlayer = {
+            id: {{ player.id }},
+            name: '{{ user.name }}',
+            color: '{{ player.color }}'
+        };
         var canvasW = $(window).width();
         var canvasH = $(window).height() - 30;
     </script>

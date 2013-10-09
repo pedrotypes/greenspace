@@ -24,8 +24,6 @@ $G = {
     bases: {},
     basesIndex: {},
     baseRanges: [],
-    fleets: {},
-    fleetIcons: [],
     overlays: [],
     detection: [],
 
@@ -39,18 +37,26 @@ $G = {
                 $.each($G.overlays, function(i, o) { o.remove(); });
                 $G.overlays.length = 0;
 
-                $G.updateStatusBar(state.status);
+                $G.state.status(state.status);
+                $G.state.loadBases(state.bases);
 
                 $G.bases = state.bases;
                 if ($G.refreshCount === 0) $G.drawBases();
-                
-                $G.fleets = state.fleets;
-                $G.clearBaseInbound();
-                $G.drawFleets();
+
+                // There's a bug where f.id() returns a string for newly moved fleets, hence the parseInt
+                var oldFleets = $.map($G.state.fleets(), function(f) { return parseInt(f.id(), 10); });
+
+                $G.state.loadFleets(state.fleets);
+                if ($G.refreshCount > 0) {
+                    var serverFleets = $.map(state.fleets, function(f) { return f.id; });
+                    $.each(oldFleets, function(i, f) {
+                        if ($.inArray(f, serverFleets) == -1) {
+                            $G.state.getFleet(f).remove();
+                        }
+                    });
+                }
 
                 $G.drawBaseOverlays();
-                // $G.drawDetectionRanges();
-
                 $G.refreshCount++;
             }
         });
@@ -58,13 +64,6 @@ $G = {
 
     setViewBox: function() {
         $G.canvas.setViewBox($G.viewBox.x, $G.viewBox.y, $G.viewBox.w, $G.viewBox.h, true);
-    },
-
-    updateStatusBar: function(data) {
-        $G.state.status.bases(data.bases);
-        $G.state.status.ships(data.ships);
-        $G.state.status.fleets(data.fleets);
-        $G.state.status.production(data.production);
     },
 
     drawBases: function() {
@@ -176,74 +175,6 @@ $G = {
         });
     },
 
-    clearBaseInbound: function() {
-        $.each($G.bases, function(i, base) {
-            if (base.inbound) {
-                base.inbound.length = 0;
-            }
-        });
-    },
-
-    drawFleets: function() {
-        $.each($G.fleetIcons, function(i, icon) {
-            icon.remove();
-        });
-        $G.fleetIcons.length = 0;
-
-        $.each($G.fleets, function(i, fleet) {
-            // Draw moving fleet path
-            if (fleet.isMoving) {
-                var origin = $G.getBase(fleet.origin);
-                var destination = $G.getBase(fleet.destination);
-
-                $G.addInbound(fleet.destination, fleet);
-                
-                var pathString = "M"
-                    + x(origin.x) + "," + y(origin.y)
-                    + "L" + x(destination.x) + "," + y(destination.y)
-                ;
-
-                var path = $G.canvas
-                    .path(pathString)
-                    .attr({
-                        "stroke": fleet.player.color,
-                        "stroke-width": 1
-                    })
-                    .toBack()
-                ;
-                $G.overlays.push(path);
-            }
-
-            // Report parked fleets
-            if (fleet.base) {
-                $G.addOrbiting(fleet.base, fleet);
-            }
-
-            // Draw the fleet itself
-            var icon = $G.canvas
-                .circle(x(fleet.coords.x), y(fleet.coords.y), 3)
-                .attr({
-                    "fill": fleet.player.color
-                })
-            ;
-
-
-            $G.overlays.push(icon);
-        });
-    },
-
-    addInbound: function(baseId, fleet) {
-        var base = $G.getBase(baseId);
-        if (!base.inbound) base.inbound = [];
-        base.inbound.push(fleet);
-    },
-
-    addOrbiting: function(baseId, fleet) {
-        var base = $G.getBase(baseId);
-        if (!base.orbiting) base.orbiting = [];
-        base.orbiting.push(fleet);
-    },
-
     drawDetectionRanges: function() {
         $.each($G.detection, function(i, d) { d.remove(); });
         $G.detection.length = 0;
@@ -318,77 +249,8 @@ $G = {
 
         var base = $G.getBase(baseId);
         $G.drawFleetRange(base);
-    },
 
-
-    
-
-    // Commands
-
-    fleetCreate: function(e) {
-        var baseId = parseInt($(e.target).attr('data-base'), 10);
-        var power = prompt('How many ships?');
-
-        $.ajax({
-            url: base_url + 'play/commands/createfleet/' + baseId,
-            type: 'POST',
-            dataType: 'json',
-            data: 'power=' + power,
-            success: function(res) {
-                $G.refresh();
-                $G.selectBase(baseId);
-            },
-            error: function() {
-                alert('Sorry, unable to create fleet at this time');
-            }
-        });
-    },
-
-    fleetStation: function(e) {
-        var baseId = parseInt($(e.target).attr('data-base'), 10);
-        var fleetIds = $G.getSelectedFleets();
-        var fleetData = [];
-        $.each(fleetIds, function(i, f) { fleetData.push('fleet[]='+f); });
-        fleetData = fleetData.join('&');
-
-        $.ajax({
-            url: base_url + 'play/commands/stationfleets/' + baseId,
-            type: 'POST',
-            dataType: 'json',
-            data: fleetData,
-            success: function(res) {
-                $G.refresh();
-                $G.selectBase(baseId);
-            },
-            error: function() {
-                alert('Sorry, unable to garrison fleets at this time');
-            }
-        });
-    },
-
-    fleetMove: function(e) {
-        var baseId = parseInt($(e.target).parent().attr("data-base"), 10);
-
-        var destination = parseInt($(e.target).val(), 10);
-
-        var fleetIds = $G.getSelectedFleets();
-        var postData = ['destination='+destination];
-        $.each(fleetIds, function(i, f) { postData.push('fleet[]='+f); });
-        postData = postData.join('&');
-
-        $.ajax({
-            url: base_url + 'play/commands/movefleets/' + gameId,
-            type: 'POST',
-            dataType: 'json',
-            data: postData,
-            success: function(res) {
-                $G.refresh();
-                $G.selectBase(baseId);
-            },
-            error: function() {
-                alert('Sorry, unable to move fleets at this time');
-            }
-        });
+        $G.state.goToBase(baseId);
     }
 };
 
@@ -398,7 +260,7 @@ $G = {
 function resizeMapView(e, el, step) {
     e.preventDefault();
 
-    mapCenter(e.pageX - el.offsetLeft, e.pageY - el.offsetTop);
+    // mapCenter(e.pageX - el.offsetLeft, e.pageY - el.offsetTop);
     mapResize(step);
     $G.setViewBox();
 
@@ -461,11 +323,6 @@ $("#map-container")
 
 
 // Events
-$("#map-refresh").on('click', function() { $G.refresh(); });
-$("#game-panel").on('click', '.control-fleet-create', function(e) { $G.fleetCreate(e); });
-$("#game-panel").on('change', '.fleet-check', $G.handleFleetCheck);
-$("#game-panel").on('click', '.fleet-station', $G.fleetStation);
-$("#game-panel").on('change', '.fleet-move', $G.fleetMove);
 
 // Double click to zoom in on the map
 $("#map-container").on('dblclick', function(e) {

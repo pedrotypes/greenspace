@@ -12,6 +12,8 @@ use My\MainBundle\Entity\Player;
 use My\MainBundle\Entity\Base;
 use My\MainBundle\Entity\Fleet;
 
+use My\MainBundle\Model\FleetCard;
+
 
 class CommandsController extends Controller
 {
@@ -44,7 +46,9 @@ class CommandsController extends Controller
         $em->persist($base);
         $em->flush();
 
-        return new Response($fleet->getId());
+        $card = new FleetCard($fleet, $base->getMap()->getGame());
+
+        return new Response(json_encode($card->visible()));
     }
 
     public function stationFleetsAction(Base $base)
