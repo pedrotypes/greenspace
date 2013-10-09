@@ -47,13 +47,12 @@ $G = {
 
                 var oldFleets = $.map($G.state.fleets(), function(f) { return f.id(); });
                 $G.state.loadFleets(state.fleets);
-                // var serverFleets = $.map(state.fleets, function(f) { return f.id; });
-                // $.each(oldFleets, function(i, f) {
-                //     if ($.inArray(f, serverFleets) == -1)
-                //         $G.state.getFleet(f).remove();
-                // });
-
-                
+                var serverFleets = $.map(state.fleets, function(f) { return f.id; });
+                $.each(oldFleets, function(i, f) {
+                    if ($.inArray(f, serverFleets) == -1) {
+                        $G.state.getFleet(f).remove();
+                    }
+                });
 
                 $G.drawBaseOverlays();
                 // $G.drawDetectionRanges();
