@@ -79,14 +79,26 @@ function FleetCommand(base) {
     self.destination = ko.observable();
 
     self.garrison = function() {
+        var fleetData = [];
         $.each(self.fleets(), function(i, f) {
             self.map().fleets.remove(self.map().getFleet(f));
+            fleetData.push('fleet[]='+f);
         });
 
-        // API call here
+        $.ajax({
+            url: base_url + 'play/commands/stationfleets/' + self.base(),
+            type: 'POST',
+            dataType: 'json',
+            data: fleetData.join('&'),
+            error: function() {
+                alert('Sorry, unable to garrison fleets at this time');
+            }
+        });
     };
     self.abort = function() {
+        var fleetData = ['destination='+self.base()];
         $.each(self.fleets(), function(i, f) {
+            fleetData.push('fleet[]='+f);
             self.map().getFleet(f)
                 .base(self.baseObject)
                 .origin(null)
@@ -94,14 +106,24 @@ function FleetCommand(base) {
             ;
         });
 
-        // API call here
+        $.ajax({
+            url: base_url + 'play/commands/movefleets/' + gameId,
+            type: 'POST',
+            dataType: 'json',
+            data: fleetData.join('&'),
+            error: function() {
+                alert('Sorry, unable to abort jump at this time');
+            }
+        });
     };
     self.move = function(destination) {
         self.destination(destination.id);
         var o = self.baseObject;
         var d = self.map().getBase(self.destination());
 
+        var fleetData = ['destination='+destination.id];
         $.each(self.fleets(), function(i, f) {
+            fleetData.push('fleet[]='+f);
             var fleet = self.map().getFleet(f);
             if (o == d) {
                 fleet
@@ -118,7 +140,15 @@ function FleetCommand(base) {
         });
         self.fleets.removeAll();
 
-        // API call here
+        $.ajax({
+            url: base_url + 'play/commands/movefleets/' + gameId,
+            type: 'POST',
+            dataType: 'json',
+            data: fleetData.join('&'),
+            error: function() {
+                alert('Sorry, unable to move fleets at this time');
+            }
+        });
     };
 }
 
