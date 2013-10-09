@@ -331,25 +331,29 @@ function MapViewModel() {
             var b = self.getBase(data.base);
             var o = self.getBase(data.origin);
             var d = self.getBase(data.destination);
+
+            var id = parseInt(data.id, 10);
+            var power = parseInt(data.power, 10);
+
             if (f) {
                 f
-                    .id(data.id)
+                    .id(id)
                     .coords(data.coords)
                     .base(b)
                     .origin(o)
                     .destination(d)
-                    .power(data.power)
+                    .power(power)
                 ;
             } else {
                 var p = data.player ? new Player(data.player) : map.neutral;
                 self.fleets.push(new Fleet(self)
-                    .id(data.id)
+                    .id(id)
                     .player(p)
                     .coords(data.coords)
                     .base(b)
                     .origin(o)
                     .destination(d)
-                    .power(data.power)
+                    .power(power)
                 );
             }
         }
