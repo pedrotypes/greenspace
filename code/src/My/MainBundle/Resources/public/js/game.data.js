@@ -100,6 +100,7 @@ function Fleet(map) {
         var origin = self.origin();
         var destination = self.destination();
 
+        // Moving
         if (origin && destination) {
             var pathString = "M"
                 + x(origin.x()) + "," + y(origin.y())
@@ -122,6 +123,8 @@ function Fleet(map) {
                 ;
             }
         }
+        // Finished moving
+        else if (self.pathObject) self.pathObject.remove();
     });
 
     self.iconObject = null;
