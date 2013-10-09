@@ -9,11 +9,39 @@
         <span data-bind="text: name"></span>
         <small data-bind="text: player().name"></small>
     </h1>
+
+    <ul class='base-stats list-unstyled'>
+        <li>
+            Resources:
+            <span data-bind="text: resources"></span>
+        </li>
+        <li data-bind="if: production">
+            Production:
+            <span data-bind="text: production"></span>
+        </li>
+    </ul>
+
+    <p data-bind="if: totalPower() > 0">
+        Power: <span data-bind="text: totalPower"></span>
+        <br>- <span data-bind="text: fleetPower"></span> orbiting ships
+        <br>- <span data-bind="text: power"></span> garrisoned ships
+    </p>
+
+    <form data-bind="
+        if: power() > 0 && player().id() == playerId,
+        submit: fleetCommand.create
+    ">
+        <input type="number" data-bind="value: fleetCommand.power" placeholder="ships">
+        <button type="submit">create fleet</button>
+    </form>
     
 
     <!-- ko if: fleets().length > 0 -->
-    <p>Orbiting:</p>
-    <ul class="list-unstyled">
+    <p>
+        <span data-bind="text: fleets().length"></span>
+        orbiting fleets:
+    </p>
+    <ul class="fleets-list list-unstyled">
         <!-- ko foreach: ownFleets() -->
         <li data-bind="playerColor: player()">
             <label>
@@ -29,11 +57,11 @@
 
         <!-- ko if: fleetCommand.fleets().length > 0 -->
         <li class='fleet-commands'>
-            <button type="button" data-bind="click: fleetCommand.garrison">
+            <button type="button" class="btn btn-default btn-xs" data-bind="click: fleetCommand.garrison">
                 garrison
             </button>
 
-            <button type="button" data-bind="click: fleetCommand.abort">
+            <button type="button" class="btn btn-default btn-xs" data-bind="click: fleetCommand.abort">
                 abort jump
             </button>
 
@@ -41,7 +69,7 @@
                 <br><button type="button" data-bind="
                     text: 'Move to ' + name + '(' + distance + ')',
                     click: $parent.fleetCommand.move
-                "></button>
+                " class="btn btn-default btn-xs"></button>
             <!-- /ko -->
         </li>
         <!-- /ko -->
@@ -59,7 +87,10 @@
     <!-- /ko -->
 
     <!-- ko if: inbound().length > 0 -->
-    <p>Inbound:</p>
+    <p>
+        <span data-bind="text: inbound().length"></span>
+        inbound fleets:
+    </p>
     <ul class="list-unstyled" data-bind="foreach: inbound">
         <!-- ko if: origin() -->
         <li data-bind="playerColor: player()">

@@ -39,8 +39,13 @@ body {
     background: #111;
     padding: 0.5em 1em;
 }
-#game-panel h2 {
-    color: #ddd;
+
+#game-panel h1 {
+    margin-bottom: 1em;
+}
+#game-panel h1 small {
+    display: block;
+    font-size: 0.5em;
 }
 
 .lobby-players {
@@ -69,6 +74,10 @@ body {
 
 .fleet-create {
     display: inline-block;
+}
+
+.fleet-commands .btn {
+    margin-bottom: 0.2em;
 }
 
 .map-status {

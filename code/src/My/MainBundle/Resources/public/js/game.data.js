@@ -26,6 +26,8 @@ function Base(map) {
     self.map = ko.observable(map);
     self.name = ko.observable();
     self.power = ko.observable();
+    self.resources = ko.observable();
+    self.production = ko.observable();
     self.inFleetRange = ko.observable();
 
     self.fleetCommand = new FleetCommand(self);
@@ -41,18 +43,40 @@ function Base(map) {
             if (fleet.belongsTo(self.map().player())) return fleet;
         });
     });
-
     self.otherFleets = ko.computed(function() {
         return $.map(self.fleets(), function(fleet) {
             if (!fleet.belongsTo(self.map().player())) return fleet;
         });
     });
-
     self.inbound = ko.computed(function() {
         return $.map(self.map().fleets(), function(fleet) {
             if (fleet.isInboundTo(self)) return fleet;
         });
     });
+
+    self.fleetPower = ko.computed(function() {
+        var power = 0;
+        $.each(self.ownFleets(), function(i, fleet) {
+            power = power + parseInt(fleet.power(), 10);
+        });
+
+        return power;
+    });
+    self.totalPower = ko.computed(function() {
+        var power = parseInt(self.power(), 10);
+        power = isNaN(power) ? 0 : power;
+
+        return power + self.fleetPower();
+    });
+
+    self.addPower = function(power) {
+        power = parseInt(power, 10);
+        self.power(self.power() + power);
+    };
+    self.removePower = function(power) {
+        power = parseInt(power, 10);
+        self.power(self.power() - power);
+    };
 }
 
 function Fleet() {
@@ -77,11 +101,14 @@ function FleetCommand(base) {
 
     self.fleets = ko.observableArray();
     self.destination = ko.observable();
+    self.power = ko.observable();
 
     self.garrison = function() {
         var fleetData = [];
         $.each(self.fleets(), function(i, f) {
-            self.map().fleets.remove(self.map().getFleet(f));
+            var fleet = self.map().getFleet(f);
+            self.baseObject.addPower(fleet.power());
+            self.map().fleets.remove(fleet);
             fleetData.push('fleet[]='+f);
         });
 
@@ -150,6 +177,28 @@ function FleetCommand(base) {
             }
         });
     };
+    self.create = function() {
+        var power = self.power();
+        power = power > self.baseObject.power() ? self.baseObject.power() : power;
+
+        $.ajax({
+            url: base_url + 'play/commands/createfleet/' + self.base(),
+            type: 'POST',
+            dataType: 'json',
+            data: 'power=' + power,
+            success: function(res) {
+                // add fleet to the graph
+                self.map().loadFleets([res]);
+
+                // adjust base power
+                self.baseObject.removePower(power);
+                self.power(null);
+            },
+            error: function() {
+                alert('Sorry, unable to create fleet at this time');
+            }
+        });
+    };
 }
 
 function MapViewModel() {
@@ -167,7 +216,6 @@ function MapViewModel() {
 
     self.goToBase = function(id) {
         self.selectedBase(self.getBase(id));
-        console.log(id);
     };
 
     self.getBase = function(id) { return self.find(id, self.bases()); };
@@ -187,6 +235,8 @@ function MapViewModel() {
                     .id(data.id)
                     .name(data.name)
                     .power(data.power)
+                    .resources(data.resources)
+                    .production(data.production)
                 ;
             } else {
                 var p = data.player ? new Player(data.player) : map.neutral;
@@ -194,6 +244,8 @@ function MapViewModel() {
                     .id(data.id)
                     .name(data.name)
                     .power(data.power)
+                    .resources(data.resources)
+                    .production(data.production)
                     .player(p)
                     .inFleetRange(data.inFleetRange)
                 ;
