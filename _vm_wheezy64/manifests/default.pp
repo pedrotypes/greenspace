@@ -172,7 +172,7 @@ puphpet::ini { 'xdebug':
     'xdebug.remote_handler = "dbgp"',
     'xdebug.remote_port = 9000'
   ],
-  ini     => '/etc/php5/conf.d/zzz_xdebug.ini',
+  ini     => '/etc/php5/fpm/conf.d/zzz_xdebug.ini',
   notify  => Service['php5-fpm'],
   require => Class['php'],
 }
@@ -181,7 +181,7 @@ puphpet::ini { 'php':
   value   => [
     'date.timezone = "UTC"'
   ],
-  ini     => '/etc/php5/conf.d/zzz_php.ini',
+  ini     => '/etc/php5/fpm/conf.d/zzz_php.ini',
   notify  => Service['php5-fpm'],
   require => Class['php'],
 }
@@ -192,7 +192,7 @@ puphpet::ini { 'custom':
     'error_reporting = -1',
     'allow_url_fopen = 1'
   ],
-  ini     => '/etc/php5/conf.d/zzz_custom.ini',
+  ini     => '/etc/php5/fpm/conf.d/zzz_custom.ini',
   notify  => Service['php5-fpm'],
   require => Class['php'],
 }
