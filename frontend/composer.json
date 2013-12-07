@@ -20,9 +20,10 @@
         }
     ],
     "require": {
-        "php": ">=5.3.3",
-        "symfony/symfony": "2.3.2",
-        "doctrine/orm": ">=2.2.3,<2.4-dev",
+        "php": ">=5.4.3",
+        "symfony/symfony": "~2.4@stable",
+        "doctrine/orm": "~2.4@stable",
+        "doctrine/dbal": "~2.4@stable",
         "doctrine/doctrine-bundle": "1.2.*",
         "twig/extensions": "1.0.*",
         "symfony/assetic-bundle": "2.3.*",
@@ -32,7 +33,7 @@
         "sensio/framework-extra-bundle": "2.3.*",
         "sensio/generator-bundle": "2.3.*",
         "incenteev/composer-parameter-handler": "~2.0",
-        
+
         "friendsofsymfony/user-bundle": "2.0.*@dev",
         "doctrine/migrations": "dev-master",
         "doctrine/doctrine-migrations-bundle": "dev-master",
