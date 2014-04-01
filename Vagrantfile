@@ -12,15 +12,15 @@ Vagrant.configure("2") do |config|
     config.vm.host_name = "greenspace.dev"
 
     # Hostmanager plugin
-    config.hostmanager.enabled = true
-    config.hostmanager.manage_host = true
-    config.hostmanager.ignore_private_ip = false
-    config.hostmanager.include_offline = true
+    # config.hostmanager.enabled = true
+    # config.hostmanager.manage_host = true
+    # config.hostmanager.ignore_private_ip = false
+    # config.hostmanager.include_offline = true
 
     config.vm.provider :virtualbox do |v|
         v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-        v.customize ["modifyvm", :id, "--memory", 256]
-        v.name = "greenspace"
+        v.customize ["modifyvm", :id, "--memory", 512]
+        v.customize ["modifyvm", :id, "--name", "greenspace"]
     end
 
     nfs_setting = RUBY_PLATFORM =~ /darwin/ || RUBY_PLATFORM =~ /linux/
