@@ -1,27 +1,38 @@
-Vagrant.configure("2") do |config|
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant::Config.run do |config|
+
   config.vm.box = "wheezy64"
-  config.vm.box_url = "http://puppet-vagrant-boxes.puppetlabs.com/debian-70rc1-x64-vbox4210.box"
+  config.vm.box_url = "http://vagrant.devile.net/debian_7.1_wheezy_64_m.box"
 
-  config.vm.network :private_network, ip: "33.33.0.68"
-    config.ssh.forward_agent = true
+  config.vm.network :hostonly, "10.11.100.20"
+  #config.vm.network :hostonly, "192.168.111.10"
+  config.vm.host_name = "greenspace.dev.pedrocandeias.com"
 
-  config.vm.provider :virtualbox do |v|
-    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-    v.customize ["modifyvm", :id, "--memory", 256]
-    v.customize ["modifyvm", :id, "--name", "greenspace"]
-  end
+  config.vm.share_folder "develop", "/project/greenspace2", "../", owner: "www-data", group: "www-data"
 
-  nfs_setting = RUBY_PLATFORM =~ /darwin/ || RUBY_PLATFORM =~ /linux/
-  config.vm.synced_folder "/Volumes/DropboxDrive/Dropbox/project", "/project", id: "vagrant-root" , :nfs => nfs_setting
+  # Use 384mb in the VM
+  config.vm.customize ["modifyvm", :id, "--memory", "384"]
+
+  # Use all available cpus in the VM
+  config.vm.customize ["modifyvm", :id, "--cpus", `awk "/^processor/ {++n} END {print n}" /proc/cpuinfo 2> /dev/null || sh -c 'sysctl -n hw.logicalcpu 2> /dev/null' || echo 1`.chomp]
+  #config.vm.customize ["modifyvm", :id, "--cpus", "1"]
+
+  config.vm.customize ["modifyvm", :id, "--name", "greenspace.dev.pedrocandeias.com"]
+
+  # Allow symlinks on shared folders
+  config.vm.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate/v-root", "1"]
+  config.vm.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate/develop", "1"]
+
   config.vm.provision :shell, :inline => "sudo apt-get update"
 
-
-  config.vm.provision :shell, :inline => 'echo -e "mysql_root_password=vagrantpassword
-controluser_password=awesome" > /etc/phpmyadmin.facts;'
+  config.vm.provision :shell, :inline => 'echo -e "mysql_root_password=vagrantpassword controluser_password=awesome" > /etc/phpmyadmin.facts;'
 
   config.vm.provision :puppet do |puppet|
     puppet.manifests_path = "manifests"
     puppet.module_path = "modules"
-    puppet.options = ['--verbose']
+    puppet.options = "--verbose"
   end
+
 end

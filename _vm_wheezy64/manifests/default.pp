@@ -62,12 +62,12 @@ class { 'nginx': }
 #
 # App vhost
 #
-$vhost = 'greenspace.dev'
+$vhost = 'greenspace.dev.pedrocandeias.com'
 $www_root = '/project/greenspace2/code/web'
 $path_translated = 'PATH_TRANSLATED $document_root$fastcgi_path_info'
 $script_filename = 'SCRIPT_FILENAME $document_root$fastcgi_script_name'
 
-nginx::resource::vhost { 'greenspace.dev':
+nginx::resource::vhost { 'greenspace.dev.pedrocandeias.com':
   ensure       => present,
   server_name  => [$vhost],
   listen_port  => 80,
@@ -76,7 +76,7 @@ nginx::resource::vhost { 'greenspace.dev':
   try_files           => ['$uri', '@rewriteapp'],
 }
 
-nginx::resource::location { 'greenspace.dev-php-1-rewrite':
+nginx::resource::location { 'greenspace.dev.pedrocandeias.com-php-1-rewrite':
   ensure              => 'present',
   vhost               => $vhost,
   www_root            => $www_root,
@@ -86,7 +86,7 @@ nginx::resource::location { 'greenspace.dev-php-1-rewrite':
   }
 }
 
-nginx::resource::location { 'greenspace.dev-php-2-regex':
+nginx::resource::location { 'greenspace.dev.pedrocandeias.com-php-2-regex':
   ensure              => 'present',
   vhost               => $vhost,
   www_root            => $www_root,
@@ -212,38 +212,3 @@ mysql::db { 'greenspace':
   charset  => 'utf8',
   require  => Class['mysql::server'],
 }
-
-class { 'phpmyadmin':
-  require => [Class['mysql::server'], Class['mysql::config'], Class['php']],
-}
-
-nginx::resource::vhost { 'phpmyadmin':
-  ensure      => present,
-  server_name => ['phpmyadmin'],
-  listen_port => 80,
-  index_files => ['index.php'],
-  www_root    => '/usr/share/phpmyadmin',
-  try_files   => ['$uri', '$uri/', '/index.php?$args'],
-  require     => Class['phpmyadmin'],
-}
-
-nginx::resource::location { "phpmyadmin-php":
-  ensure              => 'present',
-  vhost               => 'phpmyadmin',
-  location            => '~ \.php$',
-  proxy               => undef,
-  try_files           => ['$uri', '$uri/', '/index.php?$args'],
-  www_root            => '/usr/share/phpmyadmin',
-  location_cfg_append => {
-    'fastcgi_split_path_info' => '^(.+\.php)(/.+)$',
-    'fastcgi_param'           => 'PATH_INFO $fastcgi_path_info',
-    'fastcgi_param '          => 'PATH_TRANSLATED $document_root$fastcgi_path_info',
-    'fastcgi_param  '         => 'SCRIPT_FILENAME $document_root$fastcgi_script_name',
-    'fastcgi_pass'            => 'unix:/var/run/php5-fpm.sock',
-    'fastcgi_index'           => 'index.php',
-    'include'                 => 'fastcgi_params'
-  },
-  notify              => Class['nginx::service'],
-  require             => Nginx::Resource::Vhost['phpmyadmin'],
-}
-
